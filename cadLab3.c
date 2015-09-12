@@ -1,151 +1,269 @@
-#include <stdio.h>
+#include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #define MAXLENGTH 512
-#define CHECK "OOOOO"
-#include <stdbool.h>
+
+
 
 typedef struct Node{
+	struct Node *prev;
 	struct Node *next;
-	char name[5];
 	char n1[5];
 	char n2[5];
-	char value[5];
+	char n3[5];
+	char n4[5];
+	char depname[5];
+	char name[5];
+	char value[10];
+	float valuenum;
 } Node;
 
-typedef struct List{
-	Node *head;
-	int count;
-} List;
-
-List* createListHead(Node *new){
-	List *list = malloc(sizeof(List));
-	list->head = new;
-	list->count = 0;
-	return list;
-}
+struct Node* head;
 
 Node *createNode(char buf[MAXLENGTH]){
 	Node *new = (Node *) malloc(sizeof(Node));
-	sscanf(buf,"%s %s %s %s",new->name,new->n1,new->n2,new->value);
+	if(buf[0]=='r' || buf[0]=='l' || buf[0]=='c' || buf[0]=='i' || buf[0]=='v' || buf[0]=='R' || buf[0]=='L' || buf[0]=='C' || buf[0]=='I' || buf[0]=='V'){
+		sscanf(buf,"%s %s %s %s",new->name,new->n1,new->n2,new->value);
+	}
+	else if(buf[0]=='e' || buf[0]=='g' || buf[0]=='E'|| buf[0]=='G'){
+		sscanf(buf,"%s %s %s %s %s %s",new->name,new->n1,new->n2,new->n3,new->n4,new->value);
+	}
+	else if(buf[0]=='f' || buf[0]=='h' || buf[0]=='F' || buf[0]=='H'){
+		sscanf(buf,"%s %s %s %s %s",new->name,new->n1,new->n2,new->depname,new->value);
+	}
+	new->prev = NULL;
 	new->next = NULL;
 	return new;
 }
 
-void initializeArr(char arr[10][5]){
-	int i,j;
+void add(Node *new){
+	if(head==NULL){
+		head = new;
+		return;
+	}
+	head->prev = new;
+	new->next = head;
+	head = new;
+}
+
+void initializeMap(char map[10][5]){
+	int i;
 	for(i=0;i<10;i++){
-		for(j=0;j<5;j++){
-			arr[i][j] = 'O';
-		}
+		strcpy(map[i],"blah");
 	}
 }
 
-void initializeConn(int conn[10][10]){
+void initializeConnection(int connection[10][10]){
 	int i,j;
 	for(i=0;i<10;i++){
 		for(j=0;j<10;j++){
-			conn[i][j] = -1;
+			connection[i][j] = -1;
 		}
-	}
+	}	
 }
 
-void add(List *list,Node *node){
-    node->next = list->head; // Node points where head points
-    list->head = node; // Head points to node
-    list->count += 1; // Count of list increased by 1
-}
-
-bool findNode(char n[5], char arr[10][5]){
-	int i;
+int searchNodeInMap(char n[5],char map[10][5]){
+	int i,returnval=0;
 	for(i=0;i<10;i++){
-		if(strcmp(arr[i],n)){
-			return true;
-			break;
+		if(strcmp(map[i],n)==0){
+			returnval = 1;
+            break;
 		}
-	}
-	return false;
+	}	
+	return returnval;
 }
 
-void insertNode(char n[5],char arr[10][5]){
-	int i = 0;
-	while(!strcmp(arr[i],CHECK)){
-		i++;
-	}
-	strcpy(arr[i],n);
-}
-
-void createMap(Node *new, char arr[10][5]){
-	if(!findNode(new->n1,arr)){
-		insertNode(new->n1,arr);
-	}
-	if(!findNode(new->n2,arr)){
-		insertNode(new->n2,arr);
-	}
-}
-int findIndex(char n[5],char arr[10][5]){
-	int i,index;
-	for(i=0;i<10;i++){
-		if(strcmp(arr[i],n)){
-			index = i;
-			break;
-		}
-	}
-	return index;
-}
-
-void makeConnections(int conn[10][10],int index1,int index2){
-	int j = 0;
-	while(!(conn[index1][j]!=-1)){
-		j++;
-	}
-	conn[index1][j] = index2;
-	int k = 0;
-	while(!(conn[index2][k]!=-1)){
-		k++;
-	}
-	conn[index2][k] = index1;
-}
-
-void createRelation(Node *new,int conn[10][10],char arr[10][5]){
-	int index1,index2;
-	index1 = findIndex(new->n1,arr);
-	index2 = findIndex(new->n2,arr);
-	makeConnections(conn,index1,index2);
-}
-
-void displayReverse(Node* head){
-    Node *temp = head; // temp points where head points
-    if(temp==NULL) // If temp points to NULL
-        return; // Return nothing
-    displayReverse(temp->next); // Recursive call of display
-    printf("%s %s %s %s \n",temp->name,temp->n1,temp->n2,temp->value); //Printing the details of node
-}
-void displayMapping(char arr[10][5]){
+void insertNodeInMap(char n[5],char map[10][5]){
 	int i=0;
-	while(!strcmp(arr[i],CHECK)){
-		printf("%d %s\n",i,arr[i]);
+	while(strcmp(map[i],"blah")!=0){
+		i++;
+	}	
+	strcpy(map[i],n);
+}
+
+void createMap(Node *new, char map[10][5]){
+	char c = new->name[0];
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' || c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+		if(searchNodeInMap(new->n1,map)!=1){
+			insertNodeInMap(new->n1,map);
+		}
+		if(searchNodeInMap(new->n2,map)!=1){
+			insertNodeInMap(new->n2,map);
+		}
+	}
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+		if(searchNodeInMap(new->n1,map)!=1){
+			insertNodeInMap(new->n1,map);
+		}
+		if(searchNodeInMap(new->n2,map)!=1){
+			insertNodeInMap(new->n2,map);
+		}
+		if(searchNodeInMap(new->n3,map)!=1){
+			insertNodeInMap(new->n3,map);
+		}
+		if(searchNodeInMap(new->n4,map)!=1){
+			insertNodeInMap(new->n4,map);
+		}
+	}
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+		if(searchNodeInMap(new->n1,map)){
+			insertNodeInMap(new->n1,map);
+		}
+		if(searchNodeInMap(new->n2,map)){
+			insertNodeInMap(new->n2,map);
+		}
+	}
+	
+}
+
+int findIndex(char n[5],char map[10][5]){
+	int i;
+    int returnval;
+    for(i=0;i<10;i++){
+        if(strcmp(map[i],n)==0){
+            returnval = i;
+            break;
+        }
+    }
+    return returnval;
+}
+
+void createConnection(Node *new, int connection[10][10],char map[10][5]){
+	char c = new->name[0];
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' || c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+		int index1 = findIndex(new->n1,map);
+		int index2 = findIndex(new->n2,map);
+		connection[index1][index2] = 1;
+		connection[index2][index1] = 1;
+	}
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+		int index1 = findIndex(new->n1,map);
+		int index2 = findIndex(new->n2,map);
+		int index3 = findIndex(new->n3,map);
+		int index4 = findIndex(new->n4,map);
+		connection[index1][index2] = 1;
+		connection[index2][index1] = 1;
+		connection[index3][index4] = 1;
+		connection[index4][index3] = 1;
+	}
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+		int index1 = findIndex(new->n1,map);
+		int index2 = findIndex(new->n2,map);
+		connection[index1][index2] = 1;
+		connection[index2][index1] = 1;
+	}
+}
+
+void validate(Node *node){
+	char expr[5];
+	float value;
+	sscanf(node->value,"%f%s",&value,expr);
+	if(strcmp(expr,"n")==0){
+		node->valuenum = value * pow(10,-9);
+	}
+	else if(strcmp(expr,"u")==0){
+		node->valuenum = value * pow(10,-6);
+	}
+	else if(strcmp(expr,"m")==0){
+		node->valuenum = value * pow(10,-3);
+	}
+	else if(strcmp(expr,"k")==0){
+		node->valuenum = value * pow(10,3);
+	}
+	else if(strcmp(expr,"meg")==0){
+		node->valuenum = value * pow(10,6);
+	}
+	else{
+		printf("Invalid Unit Usage : %s\n",expr);
+		exit(3);
+	}
+}
+
+void traverse(Node *head,int connection[10][10],char map[10][5]){
+	Node *current = head;
+	Node *next;
+	while(current!=NULL){
+		createConnection(current,connection,map);
+		validate(current);
+		next = current->next;
+		current = next;
+	}
+}
+
+void displayLinkedList(Node *head){
+	Node *current = head;
+	Node *next;
+	while(current!=NULL){
+		char c = current->name[0];
+		if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' || c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+			if(current->valuenum != -1){
+				printf("%s %s %s %f\n",current->name,current->n1,current->n2,current->valuenum);
+			}
+			else{
+				printf("%s %s %s %s\n",current->name,current->n1,current->n2,current->value);
+			}
+		}
+		else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+			if(current->valuenum != -1){
+				printf("%s %s %s %s %s %f\n",current->name,current->n1,current->n2,current->n3,current->n4,current->valuenum);
+			}
+			else {
+				printf("%s %s %s %s %s %s\n",current->name,current->n1,current->n2,current->n3,current->n4,current->value);
+			}
+		}
+		else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+			if(current->valuenum != -1){
+				printf("%s %s %s %s %f",current->name,current->n1,current->n2,current->depname,current->valuenum);
+			}
+			else{
+				printf("%s %s %s %s %s",current->name,current->n1,current->n2,current->depname,current->value);
+			}
+		}
+		next = current->next;
+		current = next;
+	}
+}
+
+void displayMapping(char map[10][5]){
+	int i = 0;
+	while(strcmp(map[i],"blah")!=0){
+		printf("%d : %s\n",i,map[i]);
 		i++;
 	}
 }
-void displayConnections(char arr[10][5],int conn[10][10]){
+int findNodeCount(char map[10][5]){
 	int i = 0;
-	int k,l;
-	while(!strcmp(arr[i],CHECK)){
+	while(strcmp(map[i],"blah")!=0){
 		i++;
 	}
-	for(k=0;k<i;k++){
-		int j =0;
-		while(!(conn[k][j]!=-1)){
-			j++;
-		}
-		printf("%s : ",arr[k]);
-		for(l=0;l<j;l++){
-			printf("%s ,",arr[(conn[k][l])]);
+	return i;
+}
+void displayConnections(int connection[10][10],char map[10][5]){
+	int i,j;
+	int nodecount = findNodeCount(map);
+	for(i=0;i<nodecount;i++){
+		printf("%s :", map[i]);
+		for(j=0;j<nodecount;j++){
+			if(connection[i][j]==1){
+				printf(" %s", map[j] );
+			}
 		}
 		printf("\n");
 	}
 }
+
+void deallocateMemory(Node *head){
+	Node *current = head;
+	Node *next;
+	while(current!=NULL){
+		next = current->next;
+		free(current);
+		current = next;
+	}
+	head = NULL;
+}
+
 int main(int argc,char **argv){
 	if(argc!=2){
 		printf("%s\n","Usage ./a.out <filename>");
@@ -157,23 +275,31 @@ int main(int argc,char **argv){
 		exit(2);
 	}
 	char buf[MAXLENGTH];
-	int conn[10][10];
-	initializeConn(conn);
-	char arr[10][5];
-	initializeArr(arr);
-	fgets(buf,MAXLENGTH,fp);
-	Node *new = createNode(buf);
-	createMap(new,arr);
-	createRelation(new,conn,arr);
-	List *list = createListHead(new);
+	char map[10][5];
+	initializeMap(map);
+	int connection[10][10];
+	initializeConnection(connection);
+	int flag = 0;
 	while(fgets(buf,MAXLENGTH,fp)){
-		Node *new = createNode(buf);
-		createMap(new,arr);
-		createRelation(new,conn,arr);
-		add(list,new);
+		if(buf[0]=='.' && strcmp(buf,".circuit\n")==0){
+			flag = 1;
+			continue;
+		}
+		else if(buf[0]=='.' && strcmp(buf,".end\n")==0){
+			flag = 0;
+		}
+		if(flag==1){
+        	Node *new = createNode(buf);
+        	createMap(new,map);
+        	add(new);
+        }
 	}
-	Node *head = list->head; 
-	displayReverse(head);
-	displayMapping(arr);
-	displayConnections(arr,conn);
+	traverse(head,connection,map);
+	displayLinkedList(head);
+	printf("\n");
+	displayMapping(map);
+	printf("\n");
+	displayConnections(connection,map);
+	deallocateMemory(head);
+	return 0;
 }
