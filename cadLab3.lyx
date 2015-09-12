@@ -1,0 +1,2314 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Introduction to Literate Programming and Parsing Strings
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+9th September 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment, the program reads lines from a file and parses words
+ and stores the words in a linked list.
+ The linked list is traversed and connections between various nodes are
+ made.
+ The values of the circuit elements are parsed and validated to be stored
+ in the linked lists.
+ The program parses a simple spice control file,construct the circuit to
+ be simulated and solve the circuit equations.
+ Additionally, literate programming is implemented to do so.
+\end_layout
+
+\begin_layout Section
+The Literate Program in C
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+/* Inclusion of required libraries.
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <stdio.h> // Library File Access
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <stdlib.h> // Library File Access
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <string.h> // Library File Access
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <math.h> // Library File Access
+\end_layout
+
+\begin_layout Plain Layout
+
+#define MAXLENGTH 512
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code include all the necessary libraries that are essential for
+ the program.
+ We have included the stdlib.h for command line arguments, math.h for the
+ pow function and string.h for inbuilt functions like strcmp() and strcpy()
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+ /* Declaration of struct Node */
+\end_layout
+
+\begin_layout Plain Layout
+
+typedef struct Node{
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct Node *prev;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n1[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n2[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n3[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n4[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char depname[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char name[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char value[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	float valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+} Node;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code defines the struct Node.
+ This structure is used to hold information regarding the value of the various
+ circuit element - the name of the element, the nodes between which it is
+ connected, the value of element.
+ The struct is contains two pointers - one that points to the next struct
+ and the other which points to the previous struct.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+/* Declaration of head as a global variable */
+\end_layout
+
+\begin_layout Plain Layout
+
+struct Node* head;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Declaration of node head to act as head pointer which will hold the linked
+ list and is used to traverse the linked list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+ /* Function to create a Node */
+\end_layout
+
+\begin_layout Plain Layout
+
+Node *createNode(char buf[MAXLENGTH]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *new = (Node *) malloc(sizeof(Node));
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(buf[0]=='r' || buf[0]=='l' || buf[0]=='c' || buf[0]=='i' || buf[0]=='v'
+ || buf[0]=='R' || buf[0]=='L' || buf[0]=='C' || buf[0]=='I' || buf[0]=='V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s",new->name,new->n1,new->n2,new->value);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(buf[0]=='e' || buf[0]=='g' || buf[0]=='E'|| buf[0]=='G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s %s %s",new->name,new->n1,new->n2,new->n3,new->n4,new->
+value);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(buf[0]=='f' || buf[0]=='h' || buf[0]=='F' || buf[0]=='H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s %s",new->name,new->n1,new->n2,new->depname,new->value)
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->prev = NULL;
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->next = NULL;
+\end_layout
+
+\begin_layout Plain Layout
+
+	return new;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We make use of a createNode to create a node for the linked list.
+ A new node is declared and allocated memory.
+ The first character is checked for the type of circuit element it is and
+ depending on the value of buf[0], the other parameters of the circuit element
+ is taken.
+ The next and prev pointers are assigned to NULL and the Node is returned
+ back.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+/* Linking of the Node in a doubly linked list */
+\end_layout
+
+\begin_layout Plain Layout
+
+void add(Node *new){
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(head==NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		head = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	head->prev = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->next = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	head = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The add function is made use of to create a doubly linked list.
+ It takes a node as it's parameter and links it at the head.If head is pointing
+ to NULL, head is made to point to the node new.
+ However if head is already pointing to an element, the previous value of
+ what head was pointing to, now points to new.
+ new's next points to where head is pointing and head is made to point to
+ new.
+ In this manner a link is inserted at the head position in the linked list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+/* Initialization of Map to hold values of the nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeMap(char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(map[i],"blah");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A 2-D character array called map is declared to hold all the unique nodes
+ that are present in the circuit.
+ By holding the value of the nodes in a 2-D array, we can access the nodes
+ using their array indexes.
+ In order to keep count of the available indexes in the 2-D array, we initialise
+ the array with a random value, which a node can't take.
+ In this case the dummy value that has been used is 
+\begin_inset Quotes eld
+\end_inset
+
+blah
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Initialization of Connections array to hold which nodes are connected
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeConnection(int connection[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<10;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			connection[i][j] = -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A 2-D integer array called connection is declared to hold all the connections
+ that exist between different nodes by the virtue of their indexes that
+ are mapped in the map matrix.
+ This function initialises all the elements in the connection matrix to
+ -1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Search if a Node already exists in the map */
+\end_layout
+
+\begin_layout Plain Layout
+
+int searchNodeInMap(char n[5],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,returnval=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(strcmp(map[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			returnval = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Insert a Node if exists in the map */
+\end_layout
+
+\begin_layout Plain Layout
+
+void insertNodeInMap(char n[5],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	strcpy(map[i],n);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Creating a mapping of all the unique nodes that are present in the circuit
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createMap(Node *new, char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char c = new->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n3,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n3,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n4,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n4,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The node of the circuit is first check if it exists in the map or not.
+ If it does exist, then nothing happens.But if it doesn't,then the node is
+ added to the circuit.
+ Afte all the unique nodes have been added, a mapping of the node name and
+ it's corresponding index is present with us - which is made use of,for
+ creating connections.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Finding the index of a particular node name in map*/
+\end_layout
+
+\begin_layout Plain Layout
+
+int findIndex(char n[5],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+    int returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(strcmp(map[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+            returnval = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+            break;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create a connection between the nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createConnection(Node *new, int connection[10][10],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char c = new->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index3 = findIndex(new->n3,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index4 = findIndex(new->n4,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index3][index4] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index4][index3] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 2-D connection matrix holds all the connections that a particular node
+ makes with the other nodes.
+ For example , if in and 1 are connected then the element which is the intersect
+ion of the indexes of in and 1 is made 1,which signfies that in is connected
+ to 1 and vice-versa.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Function to modify the value of value of the circuit element*/
+\end_layout
+
+\begin_layout Plain Layout
+
+void validate(Node *node){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char expr[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	float value;
+\end_layout
+
+\begin_layout Plain Layout
+
+	sscanf(node->value,"%f%s",&value,expr);
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(strcmp(expr,"n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		node->valuenum = value * pow(10,-9);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(strcmp(expr,"u")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		node->valuenum = value * pow(10,-6);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(strcmp(expr,"m")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		node->valuenum = value * pow(10,-3);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(strcmp(expr,"k")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		node->valuenum = value * pow(10,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(strcmp(expr,"meg")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		node->valuenum = value * pow(10,6);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else{
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("Invalid Unit Usage : %s
+\backslash
+n",expr);
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit(3);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function checks whether the modifier specified for a particular value
+ of the circuit element is correct or not.
+ If it is correct, it converts it into it's corresponding float value.
+ It it is not correct it throws an error asking him to provide correct modifier
+ type and exits out of execution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Function to traverse the linked list to make connections and validate
+ the modifiers */
+\end_layout
+
+\begin_layout Plain Layout
+
+void traverse(Node *head,int connection[10][10],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		createConnection(current,connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		validate(current);
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instead of making connections and validating the modifiers at the time of
+ creating the Node and adding to the linked list.
+ The linkedlist is traversed separately to make sure there is no loss of
+ data will making the connections.
+ Hence connections and validations are done later while traversing the completed
+ linked list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Function to display the linked list */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayLinkedList(Node *head){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		char c = current->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %f
+\backslash
+n",current->name,current->n1,current->n2,current->valuenum);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			else{
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s
+\backslash
+n",current->name,current->n1,current->n2,current->value);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %s %f
+\backslash
+n",current->name,current->n1,current->n2,current->n3,current->n4,current->valuen
+um);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			else {
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %s %s
+\backslash
+n",current->name,current->n1,current->n2,current->n3,current->n4,current->value)
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %f",current->name,current->n1,current->n2,current->depna
+me,current->valuenum);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			else{
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %s",current->name,current->n1,current->n2,current->depna
+me,current->value);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function simply traverses the linked list and prints out the various
+ parameters of the various circuit elements that are present in the circuit.
+ It only takes head pointer as it's parameter.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the mapping of the nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayMapping(char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%d : %s
+\backslash
+n",i,map[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Finding the number of unique nodes in the map */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findNodeCount(char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return i;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display which node is connected to what other nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayConnections(int connection[10][10],char map[10][5]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	int nodecount = findNodeCount(map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<nodecount;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s :", map[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<nodecount;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(connection[i][j]==1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf(" %s", map[j] );
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The displayMap function shows the mapping between the index of the map and
+ the name of the map.
+ It is primarily used for debugging purposes.
+ The findNodeCount function is used to find the number of unique nodes that
+ are present in the map.
+ The displayConnections shows which node is connected to what all other
+ nodes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Function to deallocate memory */
+\end_layout
+
+\begin_layout Plain Layout
+
+void deallocateMemory(Node *head){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		free(current);
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	head = NULL;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Once all the required operations are performed, it is a good practice to
+ release back the allocated memory back into the heap.
+ This is done by making use of the free keyword to deallocate memory.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Execution of the main function */
+\end_layout
+
+\begin_layout Plain Layout
+
+int main(int argc,char **argv){
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(argc!=2){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s
+\backslash
+n","Usage ./a.out <filename>");
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	FILE *fp = fopen(argv[1],"r");
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(fp==NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s
+\backslash
+n","File could not be opened");
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit(2);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	char buf[MAXLENGTH];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char map[10][5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeMap(map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int connection[10][10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeConnection(connection);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int flag = 0;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This code stub involves reading of the command line arguments and checking
+ is a file is passed in the command line argument or not.
+ It also checks whether we are able to open the file or not.
+ Also certain matrices which would be used are declared like map,connection
+ anf buf array.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Reading of the buf array */
+\end_layout
+
+\begin_layout Plain Layout
+
+while(fgets(buf,MAXLENGTH,fp)){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(buf[0]=='.' && strcmp(buf,".circuit
+\backslash
+n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			flag = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+			continue;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(buf[0]=='.' && strcmp(buf,".end
+\backslash
+n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			flag = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(flag==1){
+\end_layout
+
+\begin_layout Plain Layout
+
+        	Node *new = createNode(buf);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	createMap(new,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	add(new);
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The program starts creating Node for the linked list only when flag is 1,
+ ie it has encountered the keyword 
+\begin_inset Quotes eld
+\end_inset
+
+.circuit
+\begin_inset Quotes erd
+\end_inset
+
+ and ends reading the file when it encounters 
+\begin_inset Quotes eld
+\end_inset
+
+.end
+\begin_inset Quotes erd
+\end_inset
+
+ keyword ie when flag becomes 0.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+/* Calling of various functions */
+\end_layout
+
+\begin_layout Plain Layout
+
+	traverse(head,connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	displayLinkedList(head);
+\end_layout
+
+\begin_layout Plain Layout
+
+	printf("
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	displayMapping(map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	printf("
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	displayConnections(connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	deallocateMemory(head);
+\end_layout
+
+\begin_layout Plain Layout
+
+	return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Different functions are called which have been explained above in various
+ chunks.
+\end_layout
+
+\begin_layout Section
+Input file Used
+\end_layout
+
+\begin_layout Standard
+A file called lyx3.spc is used to be in the input file for the program.
+ The contents of the input file are as follows.
+\end_layout
+
+\begin_layout LyX-Code
+.circuit
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4k
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 2.485m
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4.0k
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5.0k
+\end_layout
+
+\begin_layout LyX-Code
+.end
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 80.96u
+\end_layout
+
+\begin_layout Section
+Output of the Program
+\end_layout
+
+\begin_layout Standard
+The following is obtained as the output of the program on running the above
+ Input file.
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5000.000000
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4000.000000
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 0.002485
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4000.000000
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 0.000081
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 0.000081
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+0 : 1
+\end_layout
+
+\begin_layout LyX-Code
+1 : 2
+\end_layout
+
+\begin_layout LyX-Code
+2 : 3
+\end_layout
+
+\begin_layout LyX-Code
+3 : GND
+\end_layout
+
+\begin_layout LyX-Code
+4 : in
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+1 : 2 in
+\end_layout
+
+\begin_layout LyX-Code
+2 : 1 3 GND
+\end_layout
+
+\begin_layout LyX-Code
+3 : 2 GND
+\end_layout
+
+\begin_layout LyX-Code
+GND : 2 3 in
+\end_layout
+
+\begin_layout LyX-Code
+in : 1 GND
+\end_layout
+
+\begin_layout Standard
+The first part of the output shows all the parameters of the various circuit
+ elements that are there - the name, the nodes between which they are connected,
+ and their value.
+ The second part of the output conains mapping of the node across it's index.
+ The third part of the output shows the all the connections amongst the
+ nodes ie which node is connected to what other nodes.
+\end_layout
+
+\end_body
+\end_document
