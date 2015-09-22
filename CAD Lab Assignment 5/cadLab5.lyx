@@ -1,0 +1,4276 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Solution of Matrix Equation in C
+\end_layout
+
+\begin_layout Author
+Akshit Kumar 
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+September 20, 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment, we finally solve the matrix eqautions by making use
+ of the Gaussian Elimination technique.
+ Two types of analysis are done in this program - DC Analysis and AC Analysis
+ on the circuit.
+ The results of the program are stored in a file called spice.out
+\end_layout
+
+\begin_layout Section
+C Implementation of the Program
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Inclusion of all the header files */
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <stdio.h> 
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <stdlib.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <string.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <math.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <complex.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#define MAXLENGTH 512 // Defining the maximum size of the buffer
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Declaration of the struct Node to form a doubly linked list*/
+\end_layout
+
+\begin_layout Plain Layout
+
+typedef struct Node{
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct Node *prev;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n1[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n2[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n3[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char n4[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char depname[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char name[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char value[10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	float valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+} Node;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Declaration of global head*/
+\end_layout
+
+\begin_layout Plain Layout
+
+struct Node* head;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above piece of code contains all the header files that are made use
+ of the in the program.
+ It also contains the defination of the struct Node which is used of making
+ the linked list of the circuit elements.
+ Also contains the head pointer declaration.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create a Node in the linked list depending on the type of
+ element it is */
+\end_layout
+
+\begin_layout Plain Layout
+
+Node *createNode(char buf[MAXLENGTH]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *new = (Node *) malloc(sizeof(Node));
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(buf[0]=='r' || buf[0]=='l' || buf[0]=='c' || buf[0]=='i' || buf[0]=='v'
+ || buf[0]=='R' || buf[0]=='L' || buf[0]=='C' || buf[0]=='I' || buf[0]=='V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s",new->name,new->n1,new->n2,new->value);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(buf[0]=='e' || buf[0]=='g' || buf[0]=='E'|| buf[0]=='G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s %s %s",new->name,new->n1,new->n2,new->n3,new->n4,new->
+value);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(buf[0]=='f' || buf[0]=='h' || buf[0]=='F' || buf[0]=='H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		sscanf(buf,"%s %s %s %s %s",new->name,new->n1,new->n2,new->depname,new->value)
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->prev = NULL;
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->next = NULL;
+\end_layout
+
+\begin_layout Plain Layout
+
+	return new;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to add a node to the linked list */
+\end_layout
+
+\begin_layout Plain Layout
+
+void add(Node *new){
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(head==NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		head = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	head->prev = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+	new->next = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	head = new;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code contains the function to create the Node and add them to
+ the linked list.The createNode function reads in what type of circuit element
+ it is and assignes the type of node according to that itself.
+ The add function is used to create a doubly linked list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to initialise all the values of map matrix to "blah" */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeMap(char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(map[i],"blah");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/*Function to initialise all the value of the connection matrix to -1 */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeConnection(int connection[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<10;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			connection[i][j] = -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/*Function to initialise all the elements of the mnaMatrix to 0 */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeMNA(double complex mnaMatrix[20][20]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<20;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<20;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[i][j] = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to initialise all the values of the variableMatrix to "crap"
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeVariableMatrix(char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<20;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(variableMatrix[i],"crap");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to initialise all the values of the mapVoltageSource to "some"
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void initializeMapVoltageSources(char mapVoltageSources[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(mapVoltageSources[i],"some");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code contains various functions to initialise the various matrices
+ that are used in the program.
+ The map matrix is used to store mapping of Node and index value, the connection
+ matrix is used to store the connections between various nodes, mnaMatrix
+ is used to make the conductance matrix using element stamps and Modified
+ Nodal Analysis,the variableMatrix is used to store the mapping for all
+ the unique Voltage Nodes and the current through the independent Voltage
+ Sources.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+* Function to search for a Node name in the map matrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int searchNodeInMap(char n[10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,returnval=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(strcmp(map[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			returnval = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to search for the index of a node name in the map matrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int searchIndexInMap(char n[10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(strcmp(map[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			returnval = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+			break;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to insert a Node in the map matrix if it is unique */
+\end_layout
+
+\begin_layout Plain Layout
+
+void insertNodeInMap(char n[10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	strcpy(map[i],n);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create a map for all the unique nodes that are present in
+ the circuit */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createMap(Node *new, char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char c = new->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n3,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n3,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n4,map)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n4,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n1,map)){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchNodeInMap(new->n2,map)){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertNodeInMap(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above set of functions are used to create a mapping for the unique nodes
+ with index values to uniquely identify them in the circuit.
+ A node name is read from the buffer, it is searched whether it is present
+ in the map matrix.
+ If it is not present, it is added to the map matrix using the insertNodeInMap
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to insert unique voltage sources into mapVoltageSources */
+\end_layout
+
+\begin_layout Plain Layout
+
+void insertSourcesInMapVoltageSources(char n[10],char mapVoltageSources[10][10])
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(mapVoltageSources[i],"some")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	strcpy(mapVoltageSources[i],n);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to search for the voltage source name in mapVoltageSources matrix
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+int searchSourceInMapVoltageSources(char n[10],char mapVoltageSources[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,returnval=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<10;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(strcmp(mapVoltageSources[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			returnval = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create a map for unique voltage sources that are present
+ in the circuit */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createMapVoltageSources(Node *node, char mapVoltageSources[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char c = node->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(c == 'v' || c == 'V' ){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(searchSourceInMapVoltageSources(node->name,mapVoltageSources)!=1){
+\end_layout
+
+\begin_layout Plain Layout
+
+			insertSourcesInMapVoltageSources(node->name,mapVoltageSources);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above set of functions are used to create a mapping for the unique voltage
+ sources with index values to uniquely identify them in the circuit.
+ A voltage source name is read from the buffer, it is searched whether it
+ is present in the mapVoltageSource matrix.
+ If it is not present, it is added to the map matrix using the insertSourcesInMa
+pVoltageSources function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to find the number of unique nodes in the circuit */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findNumUniqueNodes(char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return i;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create the variable matrix which contains the voltage at
+ n-1 nodes and current through k Voltage Sources */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createVariableMatrix(char mapVoltageSources[10][10],char map2[10][10],char
+ variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map2[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(variableMatrix[i],map2[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	int j=i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(mapVoltageSources[j-i],"some")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		strcpy(variableMatrix[j],mapVoltageSources[j-i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		j++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	} 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/*Function to find the number of variables in variableMatrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findNumVariableMatrix(char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(variableMatrix[i],"crap")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return i;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to find the index of a node in the map matrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findIndex(char n[10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+    int returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(i=0;i<20;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(strcmp(map[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+            returnval = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+            break;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to find the index of a node or current through voltage source
+ in the variableMatrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findIndexV(char n[10],char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+    int returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(i=0;i<20;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(strcmp(variableMatrix[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+            returnval = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+            break;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to find the index of a node or current through voltage source
+ in the variableMatrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findIndexInVariableMatrix(char n[10],char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	int returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<20;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(strcmp(variableMatrix[i],n)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			returnval = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+			break;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return returnval;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above snippet contains the various functions which are explained as
+ comments in the program.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create the MNA Matrix in the case of AC Analysis */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createConductanceMatrixAC(char map[10][10],char variableMatrix[10][10],Node
+ *head, double complex mnaMatrix[20][20],double complex knownMatrix[20],float
+ w){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current != NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		char c = current->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(current->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(current->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(c=='R' || c=='r'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			imp = current->valuenum + 0.00 * I;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index1] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index2] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index1] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index2] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='L' || c=='l'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			imp = 0.0 + I*(w*(current->valuenum));
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index1] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index2] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index1] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index2] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='C' || c=='c'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			imp = 0.0 - I*(1.0/(w*(current->valuenum)));
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index1] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index2] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index1] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index2] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='I' || c=='i'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[index1] += current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[index2] -= current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='V' || c=='v'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			int pos = findIndexInVariableMatrix(current->name,variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][pos] += 1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][pos] += -1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[pos][index1] += 1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[pos][index2] += -1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[pos] += current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function is used to make the MNA Matrix in case of the AC Analysis,
+ it takes the frequency as it is constantly varied and calculate the nodal
+ voltages for the varied frequencies.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create the MNA Matrix for purely resisive circuit in case
+ of the DC Analysis */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createConductanceMatrixDC(char map[10][10],char variableMatrix[10][10],Node
+ *head, double complex mnaMatrix[20][20],double complex knownMatrix[20]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current != NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		char c = current->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(current->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(current->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(c=='R' || c=='r'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			imp = current->valuenum + 0.00 * I;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index1] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][index2] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index1] -= 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][index2] += 1.0/imp;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='L' || c=='l'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			printf("%s
+\backslash
+n"," The circuit consists of inductive elements.You are doing DC Analysis.Please
+ change to purely resistive network.
+\backslash
+n" );
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit(5);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='C' || c=='c'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			printf("%s
+\backslash
+n"," The circuit consists of capacitive elements.You are doing DC Analysis.Please
+ change to purely resistive network.
+\backslash
+n" );
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit(6);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='I' || c=='i'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[index1] += current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[index2] -= current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c=='V' || c=='v'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			int pos = findIndexInVariableMatrix(current->name,variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index1][pos] += 1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[index2][pos] += -1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[pos][index1] += 1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			mnaMatrix[pos][index2] += -1.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[pos] += current->valuenum;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function is used to make the MNA Matrix in case of the DC Analysis,
+ it takes the varied voltages and create the MNA Matrix for varied values
+ of the voltage source.
+ It throws an error is the circuit is not purely resistive.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to make the cofficients of the GND node to zero in the MNA Matrix
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void makeGNDzero(double complex mnaMatrix[20][20],char map[10][10],char
+ variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int indexGND = findIndex("GND",map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int size = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<size;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		mnaMatrix[i][indexGND] = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+		mnaMatrix[indexGND][i] = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	mnaMatrix[indexGND][indexGND] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explained the functioning in the comments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to create Connections between different nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void createConnection(Node *new, int connection[10][10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char c = new->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index3 = findIndex(new->n3,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index4 = findIndex(new->n4,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index3][index4] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index4][index3] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index1 = findIndex(new->n1,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int index2 = findIndex(new->n2,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index1][index2] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		connection[index2][index1] = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function is used to create connection between the various unique nodes
+ that are present in the circuit.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to traverse the linked list to make connections and validate
+ the circuit elements */
+\end_layout
+
+\begin_layout Plain Layout
+
+void traverse(Node *head,int connection[10][10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		createConnection(current,connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		validate(current);
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to traverse the linked list to make mapping of voltage sources
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+void traverse2(Node *head,char mapVoltageSources[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		createMapVoltageSources(current,mapVoltageSources);
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explained the functioning in the comments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the linked list */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayLinkedList(Node *head){
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		char c = current->name[0];
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(c =='r' || c =='l' || c =='c' || c == 'i' || c == 'v' || c == 'R' ||
+ c == 'L' || c == 'C' || c == 'I' || c == 'V'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %f
+\backslash
+n",current->name,current->n1,current->n2,current->valuenum);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c == 'e' || c == 'g' || c == 'E' || c == 'G'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %s %f
+\backslash
+n",current->name,current->n1,current->n2,current->n3,current->n4,current->valuen
+um);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if(c == 'f' || c == 'h' || c == 'F' || c == 'H'){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(current->valuenum != -1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf("%s %s %s %s %f",current->name,current->n1,current->n2,current->depna
+me,current->valuenum);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to diplay the MNA matrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayConductanceMatrix( double complex mnaMatrix[20][20],char variableMat
+rix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int length= findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<length;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<length;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			printf("%.2f+i%.2f
+\backslash
+t",creal(mnaMatrix[i][j]),cimag(mnaMatrix[i][j]));
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the mapping of unique nodes with an array index */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayMapping(char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%d : %s
+\backslash
+n",i,map[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to find the node count */
+\end_layout
+
+\begin_layout Plain Layout
+
+int findNodeCount(char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(map[i],"blah")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return i;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the various connections between different nodes */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayConnections(int connection[10][10],char map[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	int nodecount = findNodeCount(map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<nodecount;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s :", map[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=0;j<nodecount;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(connection[i][j]==1){
+\end_layout
+
+\begin_layout Plain Layout
+
+				printf(" %s", map[j] );
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the variableMatrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayVariableMatrix(char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(strcmp(variableMatrix[i],"crap")!=0){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s
+\backslash
+n",variableMatrix[i] );
+\end_layout
+
+\begin_layout Plain Layout
+
+		i++;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the knownMatrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayKnownMatrix(double complex knownMatrix[20],char variableMatrix[20][1
+0]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i=0; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	int max = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<max;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%f + i%f
+\backslash
+n",creal(knownMatrix[i]),cimag(knownMatrix[i]));
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to display the results */
+\end_layout
+
+\begin_layout Plain Layout
+
+void displayResults(double complex results[20],char variableMatrix[20][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int n = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<n;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%f + i%f
+\backslash
+n",creal(results[i]),cimag(results[i]));
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code snippet contains the various functions that are required
+ to display the various matrices that are used in the program.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to perform the Gaussian Elimination  */
+\end_layout
+
+\begin_layout Plain Layout
+
+void gaussianElimination(double complex mnaMatrix[20][20],char variableMatrix[20
+][10],double complex knownMatrix[20],double complex results[20]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	int n = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i,j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex ratio;
+\end_layout
+
+\begin_layout Plain Layout
+
+	int count;
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Perform the Forward Reduction */
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=0;i<(n-1);i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=i+1;j<n;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			ratio = mnaMatrix[j][i]/mnaMatrix[i][i];
+\end_layout
+
+\begin_layout Plain Layout
+
+			for(count=i;count<n+1;count++){
+\end_layout
+
+\begin_layout Plain Layout
+
+				mnaMatrix[j][count] -= (ratio * mnaMatrix[i][count]);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			knownMatrix[j] -= (ratio * knownMatrix[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Perform the back substitution */
+\end_layout
+
+\begin_layout Plain Layout
+
+	results[n-1] = knownMatrix[n-1]/mnaMatrix[n-1][n-1];
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex temp;
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i=n-2;i>=0;i--){
+\end_layout
+
+\begin_layout Plain Layout
+
+		temp = knownMatrix[i];
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(j=i+1;j<n;j++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			temp -= (mnaMatrix[i][j] * results[j]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		results[i] = temp/mnaMatrix[i][i];
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above code snippet is used to perform the Gaussian Elimination over
+ the mnaMatrix to get the value of the unknown nodal voltage and current
+ through the known voltage source.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Function to do the DC Analysis for the circuit */
+\end_layout
+
+\begin_layout Plain Layout
+
+void dcAnalysis(char buf[MAXLENGTH],Node *head, char mapVoltageSources[10][10],c
+har map[10][10],double complex mnaMatrix[20][20],double complex results[20],doub
+le complex knownMatrix[20],char variableMatrix[20][10],int connection[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char mode[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char name[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	float vmax,vmin,vstep;
+\end_layout
+
+\begin_layout Plain Layout
+
+	sscanf(buf,"%s %s %f %f %f",mode,name,&vmin,&vmax,&vstep);
+\end_layout
+
+\begin_layout Plain Layout
+
+	FILE *fout = fopen("spice.out","w+");
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(vmin<=vmax){
+\end_layout
+
+\begin_layout Plain Layout
+
+		traverse(head,connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		Node *current = head;
+\end_layout
+
+\begin_layout Plain Layout
+
+		Node *next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		while(current!=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(strcmp(name,current->name)==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+				current->valuenum = vmin;
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			next = current->next;
+\end_layout
+
+\begin_layout Plain Layout
+
+			current = next;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		traverse2(head,mapVoltageSources);
+\end_layout
+
+\begin_layout Plain Layout
+
+		createVariableMatrix(mapVoltageSources,map,variableMatrix); 
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex knownMatrix[20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex mnaMatrix[20][20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+		createConductanceMatrixDC(map,variableMatrix,head,mnaMatrix,knownMatrix);
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+		makeGNDzero(mnaMatrix,map,variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+		gaussianElimination(mnaMatrix,variableMatrix,knownMatrix,results);
+\end_layout
+
+\begin_layout Plain Layout
+
+		displayResults(results,variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+		vmin = vmin + vstep;
+\end_layout
+
+\begin_layout Plain Layout
+
+		int n = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(i=0;i<n;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			fprintf(fout,"%f + i%f
+\backslash
+t",creal(results[i]),cimag(results[i]));
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		fprintf(fout,"
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	} 
+\end_layout
+
+\begin_layout Plain Layout
+
+	fclose(fout);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The function is used to perform DC Analysis over the mnaMatrix depending
+ on the initial voltage, final voltage and the step voltages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/*Function to do the AC analysis for the circuit */
+\end_layout
+
+\begin_layout Plain Layout
+
+void acAnalysis(char buf[MAXLENGTH],Node *head, char mapVoltageSources[10][10],c
+har map[10][10],double complex mnaMatrix[20][20],double complex results[20],doub
+le complex knownMatrix[20],char variableMatrix[20][10],int connection[10][10]){
+\end_layout
+
+\begin_layout Plain Layout
+
+	char mode[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char name[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+	float f_min,f_max,n;
+\end_layout
+
+\begin_layout Plain Layout
+
+	sscanf(buf,"%s %s %f %f %f",mode,name,&f_min,&f_max,&n);
+\end_layout
+
+\begin_layout Plain Layout
+
+	FILE *fout = fopen("spice.out","w+");
+\end_layout
+
+\begin_layout Plain Layout
+
+	float lf_min = log(f_min);
+\end_layout
+
+\begin_layout Plain Layout
+
+	float lf_max = log(f_max);
+\end_layout
+
+\begin_layout Plain Layout
+
+	float lstep = log(10)/n;
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(lf_min<=lf_max){
+\end_layout
+
+\begin_layout Plain Layout
+
+		float w = exp(lf_min)*2*3.14;
+\end_layout
+
+\begin_layout Plain Layout
+
+		traverse(head,connection,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+		traverse2(head,mapVoltageSources);
+\end_layout
+
+\begin_layout Plain Layout
+
+		createVariableMatrix(mapVoltageSources,map,variableMatrix); 
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex knownMatrix[20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+		double complex mnaMatrix[20][20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+		createConductanceMatrixAC(map,variableMatrix,head,mnaMatrix,knownMatrix,w);
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+		makeGNDzero(mnaMatrix,map,variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+		gaussianElimination(mnaMatrix,variableMatrix,knownMatrix,results);
+\end_layout
+
+\begin_layout Plain Layout
+
+		lf_min = lf_min + lstep;
+\end_layout
+
+\begin_layout Plain Layout
+
+		int n = findNumVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+		int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+		for(i=0;i<n;i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+			fprintf(fout,"%farg(%f)
+\backslash
+t",cabs(results[i]),carg(results[i]));
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		fprintf(fout,"
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The function is used to perform AC Analysis over the mnaMatrix multiple
+ times depending on the initial frequency,final frequency and the interval
+ frequency.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int main(int argc,char **argv){
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(argc!=2){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s
+\backslash
+n","Usage ./a.out <filename>");
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	FILE *fp = fopen(argv[1],"r");
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(fp==NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+		printf("%s
+\backslash
+n","File could not be opened");
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit(2);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Declaration & Initialization of matrices we make use of for analysis
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+	char buf[MAXLENGTH];
+\end_layout
+
+\begin_layout Plain Layout
+
+	char map[10][10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeMap(map);
+\end_layout
+
+\begin_layout Plain Layout
+
+	int connection[10][10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeConnection(connection);
+\end_layout
+
+\begin_layout Plain Layout
+
+	char mapVoltageSources[10][10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeMapVoltageSources(mapVoltageSources);
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex mnaMatrix[20][20];
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex augMatrix[20][21] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeMNA(mnaMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	char variableMatrix[20][10];
+\end_layout
+
+\begin_layout Plain Layout
+
+	initializeVariableMatrix(variableMatrix);
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex knownMatrix[20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+	int flag = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	double complex results[20] = {0};
+\end_layout
+
+\begin_layout Plain Layout
+
+	while(fgets(buf,MAXLENGTH,fp)){
+\end_layout
+
+\begin_layout Plain Layout
+
+		/* Check for ".circuit" */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(buf[0]=='.' && strcmp(buf,".circuit
+\backslash
+n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			flag = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+			continue;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		/* Check for ".command" */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(buf[0]=='.' && strcmp(buf,".command
+\backslash
+n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			flag = 2;
+\end_layout
+
+\begin_layout Plain Layout
+
+			continue;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		/* Check for ".end" */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(buf[0]=='.' && strcmp(buf,".end
+\backslash
+n")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+			flag = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+			continue;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		/* Enter the ".circuit" mode */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(flag==1){
+\end_layout
+
+\begin_layout Plain Layout
+
+        	Node *new = createNode(buf);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	createMap(new,map);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	add(new);
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        /* Enter the ".command" mode */
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(flag==2){
+\end_layout
+
+\begin_layout Plain Layout
+
+        	char mode[5],name[5];
+\end_layout
+
+\begin_layout Plain Layout
+
+        	float vmin,vmax,vstep;
+\end_layout
+
+\begin_layout Plain Layout
+
+        	sscanf(buf,"%s %s %f %f %f",mode,name,&vmin,&vmax,&vstep);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	if(strcmp(mode,"dc")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+        		dcAnalysis(buf,head,mapVoltageSources,map,mnaMatrix,results,knownMatri
+x,variableMatrix,connection);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	}
+\end_layout
+
+\begin_layout Plain Layout
+
+        	else if(strcmp(mode,"ac")==0){
+\end_layout
+
+\begin_layout Plain Layout
+
+        		acAnalysis(buf,head,mapVoltageSources,map,mnaMatrix,results,knownMatri
+x,variableMatrix,connection);
+\end_layout
+
+\begin_layout Plain Layout
+
+        	}
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	deallocateMemory(head);
+\end_layout
+
+\begin_layout Plain Layout
+
+	return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main function which is used to call other function.
+ It reads stream from a text file and depending on the value of the flag,
+ performs either circuit analysis or command analysis.
+ It also contains the declaration of all the matrices used in the program.
+\end_layout
+
+\begin_layout Section
+Input file used
+\end_layout
+
+\begin_layout Standard
+The following input file provided by the Prof.
+ is used to do the AC Analysis in the circuit.
+ This is the content of the lyx3.spc file with the added command segment.
+\end_layout
+
+\begin_layout LyX-Code
+.circuit
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 80.96m
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 80.96m
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4m
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 2.485m
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4.0m
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5.0k
+\end_layout
+
+\begin_layout LyX-Code
+.end
+\end_layout
+
+\begin_layout LyX-Code
+.command
+\end_layout
+
+\begin_layout LyX-Code
+ac V1 10 1000000 10
+\end_layout
+
+\begin_layout LyX-Code
+.end
+\end_layout
+
+\begin_layout Section
+Output of the program
+\end_layout
+
+\begin_layout Standard
+The output of the program is stored in a spice.out file.
+ The contents of the spice.out file are as follows :
+\end_layout
+
+\begin_layout LyX-Code
+4999.997829arg(0.000135)	4144.025324arg(-0.000517)	3.260259arg(-1.570527)	0.000000arg(0.
+000000)	5000.000000arg(0.000000)	168.357424arg(1.574088)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.996340arg(-0.000217)	6734.217126arg(-0.001058)	4.208399arg(-1.571230)	0.000000arg(
+0.000000)	5000.000000arg(0.000000)	270.941779arg(-1.574281)	
+\end_layout
+
+\begin_layout LyX-Code
+4962.633135arg(-0.070002)	711289.143518arg(-0.141210)	353.082358arg(-1.711510)	0.000000
+arg(0.000000)	5000.000000arg(-0.000000)	87656.307757arg(-1.712507)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.998072arg(0.000735)	4314.970861arg(-3.140518)	1.701405arg(1.572265)	0.000000arg(0.0
+00000)	5000.000000arg(0.000000)	918.229707arg(1.571689)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999510arg(0.000417)	1663.179234arg(-3.141071)	0.520918arg(1.571631)	0.000000arg(0.0
+00000)	5000.000000arg(-0.000000)	521.736722arg(1.571240)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999780arg(0.000291)	842.540193arg(-3.141260)	0.209614arg(1.571378)	0.000000arg(0.00
+0000)	5000.000000arg(-0.000000)	363.388894arg(1.571093)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999881arg(0.000216)	472.802926arg(-3.141358)	0.093435arg(1.571229)	0.000000arg(0.00
+0000)	5000.000000arg(0.000000)	270.383245arg(1.571014)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999931arg(0.000166)	278.856121arg(-3.141418)	0.043773arg(1.571128)	0.000000arg(0.00
+0000)	5000.000000arg(0.000000)	207.161865arg(1.570963)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999958arg(0.000129)	168.990032arg(-3.141460)	0.021071arg(1.571054)	0.000000arg(0.00
+0000)	5000.000000arg(0.000000)	161.129736arg(1.570925)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999974arg(0.000101)	104.030382arg(-3.141489)	0.010304arg(1.570999)	0.000000arg(0.00
+0000)	5000.000000arg(0.000000)	126.381426arg(1.570897)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999984arg(0.000080)	64.645996arg(-3.141512)	0.005086arg(1.570956)	0.000000arg(0.000
+000)	5000.000000arg(0.000000)	99.613717arg(1.570876)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999990arg(0.000063)	40.403308arg(-3.141529)	0.002525arg(1.570922)	0.000000arg(0.000
+000)	5000.000000arg(0.000000)	78.747243arg(1.570859)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999994arg(0.000050)	25.341623arg(-3.141543)	0.001258arg(1.570896)	0.000000arg(0.000
+000)	5000.000000arg(0.000000)	62.364247arg(1.570846)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999996arg(0.000040)	15.929893arg(-3.141553)	0.000628arg(1.570875)	0.000000arg(0.000
+000)	5000.000000arg(0.000000)	49.444907arg(1.570836)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999998arg(0.000031)	10.027504arg(-3.141561)	0.000314arg(1.570859)	0.000000arg(0.000
+000)	5000.000000arg(0.000000)	39.229270arg(1.570828)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999998arg(0.000025)	6.317577arg(-3.141568)	0.000157arg(1.570846)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	31.137845arg(1.570821)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999999arg(0.000020)	3.982408arg(-3.141573)	0.000079arg(1.570836)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	24.722132arg(1.570816)	
+\end_layout
+
+\begin_layout LyX-Code
+4999.999999arg(0.000016)	2.511253arg(-3.141577)	0.000039arg(1.570828)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	19.631715arg(1.570812)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000012)	1.583907arg(-3.141580)	0.000020arg(1.570821)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	15.591136arg(1.570809)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000010)	0.999144arg(-3.141583)	0.000010arg(1.570816)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	12.383031arg(1.570806)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000008)	0.630324arg(-3.141585)	0.000005arg(1.570812)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	9.835467arg(1.570804)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000006)	0.397671arg(-3.141586)	0.000002arg(1.570809)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	7.812226arg(1.570803)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000005)	0.250899arg(-3.141588)	0.000001arg(1.570806)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	6.205290arg(1.570801)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000004)	0.158300arg(-3.141589)	0.000001arg(1.570804)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	4.928946arg(1.570800)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000003)	0.099879arg(-3.141590)	0.000000arg(1.570803)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	3.915155arg(1.570799)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000002)	0.063018arg(-3.141590)	0.000000arg(1.570801)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	3.109896arg(1.570799)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000002)	0.039761arg(-3.141591)	0.000000arg(1.570800)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	2.470265arg(1.570798)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000002)	0.025088arg(-3.141591)	0.000000arg(1.570799)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	1.962195arg(1.570798)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000001)	0.015829arg(-3.141591)	0.000000arg(1.570799)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	1.558623arg(1.570798)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000001)	0.009987arg(-3.141592)	0.000000arg(1.570798)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	1.238057arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000001)	0.006302arg(-3.141592)	0.000000arg(1.570798)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.983422arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000001)	0.003976arg(-3.141592)	0.000000arg(1.570798)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.781159arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.002509arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.620496arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.001583arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.492877arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000999arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	0.391506arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000630arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.310984arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000398arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.247024arg(1.570797)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000251arg(-3.141592)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	0.196218arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000158arg(-3.141593)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.155861arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000100arg(-3.141593)	0.000000arg(1.570797)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.123805arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000063arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.098342arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000040arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.078116arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000025arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.062049arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000016arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.049288arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000010arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.039150arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000006arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.031098arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000004arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	0.024702arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000003arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(-0.000000)	0.019622arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000002arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.015586arg(1.570796)	
+\end_layout
+
+\begin_layout LyX-Code
+5000.000000arg(0.000000)	0.000001arg(-3.141593)	0.000000arg(1.570796)	0.000000arg(0.0000
+00)	5000.000000arg(0.000000)	0.012380arg(1.570796)	
+\end_layout
+
+\begin_layout Standard
+In the following output, the first column is voltage of node 1, second is
+ voltage of node 2 ,third is voltage of node 3,fourth is voltage of GND
+ ie 0,fifth is voltage of in ,sixth is current through voltage source.
+ The output format is <Magnitude>arg(<Phase>).
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_body
+\end_document
