@@ -1,0 +1,1095 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Introduction to Python
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+September 25 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment, we will make use of Python to read lines from a file,
+ split them into four lists, make a dictionary of all the nodes and reconstruct
+ the list with modified values of the element value.
+ We will tackle a different kind of programming where the basic elements
+ are not numbers, but are instead vectors and matrices.
+\end_layout
+
+\begin_layout Section
+Python Implementation of the Program
+\end_layout
+
+\begin_layout Standard
+Below we can find the chunk separated Python script for achieving the task
+ of the week.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Importing necessary modules
+\end_layout
+
+\begin_layout Plain Layout
+
+from sys import argv
+\end_layout
+
+\begin_layout Plain Layout
+
+import re
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the above code we make use of two important modules namely argv and re.
+ argv module is used to take command line arguments so that we can use read
+ the file name from the command line itself.
+ The re module is the regular expression module,which allows us to search
+ a text string for patterns.
+ It is very useful for parsing our value field into a proper number.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Reading in the name of the file
+\end_layout
+
+\begin_layout Plain Layout
+
+script , filename = argv
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+argv returns two value - the name of the python script we use and the filename
+ that we provide as a command line argument.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Opening the file
+\end_layout
+
+\begin_layout Plain Layout
+
+fp = open(filename)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The built in open function is used to open a file whose name is passed as
+ a argument to the function open().
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Declaration of nodes Dictionary
+\end_layout
+
+\begin_layout Plain Layout
+
+nodes = dict()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Declaring a new dictionary data structure name nodes using the built in
+ function dict().
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Assigning GND as zero
+\end_layout
+
+\begin_layout Plain Layout
+
+nodes['GND'] = 0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hard coding the nodes dictionary's key GND to 0.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Declaring lists for name, node1 , node2 and value
+\end_layout
+
+\begin_layout Plain Layout
+
+elename = []
+\end_layout
+
+\begin_layout Plain Layout
+
+elenode1 = []
+\end_layout
+
+\begin_layout Plain Layout
+
+elenode2 = []
+\end_layout
+
+\begin_layout Plain Layout
+
+elevalue = []
+\end_layout
+
+\begin_layout Plain Layout
+
+elevaluenum = []
+\end_layout
+
+\begin_layout Plain Layout
+
+uniquenodes = []
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Declaring the list that would be made use of in the program.
+ The elename list stores the name of the electrical element used.
+ The elenode1 and elenode2 lists are used to store nodes between which the
+ electrical element is stored.
+ The elevalue list is used to store the value of the electrical element.
+ The elevaluenum is used to stored the modified value of the electrical
+ element.
+ The uniquenodes list consists of the all the uniquenodes present in the
+ circuit.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Declaring modifier dictionary
+\end_layout
+
+\begin_layout Plain Layout
+
+mods = {
+\end_layout
+
+\begin_layout Plain Layout
+
+	'p':1e-12,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'n':1e-9,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'u':1e-6,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'm':1e-3,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'':1,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'k':1e3,
+\end_layout
+
+\begin_layout Plain Layout
+
+	'meg':1e6
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Declaring the dictionary used to map the key values to the different types
+ of modifiers that are present in the circuit.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining modify function
+\end_layout
+
+\begin_layout Plain Layout
+
+def modify(str):
+\end_layout
+
+\begin_layout Plain Layout
+
+	k = re.search("^([+-]?[0-9]*[
+\backslash
+.]?[0-9]*)(e[+-]?[0-9]+)?(.*)",str)
+\end_layout
+
+\begin_layout Plain Layout
+
+	return float(k.groups()[0]) * mods[k.groups()[2]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the modify function.
+ It takes a string as it's input arguments.
+ By making use of the re module that was imported earlier.
+ The str contains the value string.
+ It has an optional sign, followed by a number, followed by an optional
+ 'e' followed by optional integer.
+ So the string is searched for an optional sign followed by 0 and more digits,fo
+llowed by an optional '.' follwoed by 0 or more digits.
+ The '^' at the start says this should begin the word.
+ After spliting the expression, the modifed value of the str is returned
+ back to be stored in elevaluenum list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the dictionary for unique nodes
+\end_layout
+
+\begin_layout Plain Layout
+
+def makeDict(uniquenodes):
+\end_layout
+
+\begin_layout Plain Layout
+
+	nodeidx = 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	for i in range(len(uniquenodes)):
+\end_layout
+
+\begin_layout Plain Layout
+
+		if uniquenodes[i] not in nodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+			nodes[uniquenodes[i]] = nodeidx
+\end_layout
+
+\begin_layout Plain Layout
+
+			nodeidx += 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	return nodes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the makeDict function which takes the list of uniquenodes as it's
+ arguments.
+ The nodeindex is initialised to 1 because the GND node has already been
+ initialised to 0.
+ A node is checked for existence in the uniquenodes list.
+ If it is not found in the list, it is added to nodes dictionary which gives
+ a unique index to each node.
+ The function returns back the changes value of the nodes dictionary.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the uniquenodes for containing all the uniquenode
+\end_layout
+
+\begin_layout Plain Layout
+
+def makeUniquenodes(str1,str2):
+\end_layout
+
+\begin_layout Plain Layout
+
+	if str1 not in uniquenodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		uniquenodes.append(str1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	if str2 not in uniquenodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		uniquenodes.append(str2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the makeUniquenodes functions which take the two nodes as it's
+ arguments.
+ If that particular node name is not present in the uniquenodes list, they
+ are added by making use of the append() function to add values to the end
+ of the list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Reading line from the files
+\end_layout
+
+\begin_layout Plain Layout
+
+for line in fp:
+\end_layout
+
+\begin_layout Plain Layout
+
+	if ".circuit" in line: # Checking for .circuit keyword in line
+\end_layout
+
+\begin_layout Plain Layout
+
+		continue
+\end_layout
+
+\begin_layout Plain Layout
+
+	elif ".end" in line: # Checking for .end keyword in line
+\end_layout
+
+\begin_layout Plain Layout
+
+		break
+\end_layout
+
+\begin_layout Plain Layout
+
+	words = line.split() # Splitting the line into words and storing in a list
+\end_layout
+
+\begin_layout Plain Layout
+
+	elename.append(words[0]) # Adding the name to list elename 
+\end_layout
+
+\begin_layout Plain Layout
+
+	elenode1.append(words[1]) # Adding node 1 to list elenode1
+\end_layout
+
+\begin_layout Plain Layout
+
+	elenode2.append(words[2]) # Adding node 2 to list elenode2
+\end_layout
+
+\begin_layout Plain Layout
+
+	makeUniquenodes(words[1],words[2]) # Adding node 1 and node 2 to the list
+ uniquenodes
+\end_layout
+
+\begin_layout Plain Layout
+
+	elevalue.append(words[3]) # Adding the value to list elevalue
+\end_layout
+
+\begin_layout Plain Layout
+
+	elevaluenum.append(modify(words[3])) # Adding the value to list elevaluenum
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is where we read lines from the file fp.
+ If 
+\begin_inset Quotes eld
+\end_inset
+
+.circuit
+\begin_inset Quotes erd
+\end_inset
+
+ key word is present in the line, it would continue.
+ If it encounters the 
+\begin_inset Quotes eld
+\end_inset
+
+.end
+\begin_inset Quotes erd
+\end_inset
+
+ key word, it would break out of the circuit.
+ The input of the buffer would be a line from the file.
+ We can split the line into four words where words is a list.
+ We then add the elements of the words list to other lists - elename , elenode1,
+ elenode2 , elevalue.
+ We also call the makeUniquendes function to make the list of uniquenodes.
+ The modify function is called to modify the value of the circuit element
+ and added to the elevaluenum list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+makeDict(uniquenodes) # Making the dictionary of unique nodes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The makeDict function is called which has been explained earlier.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Printing the circuit specification
+\end_layout
+
+\begin_layout Plain Layout
+
+for i in range(len(elename)):
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "%s %s %s %s" %(elename[i],elenode1[i],elenode2[i],elevalue[i])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Printing the circuit specifications.
+ We calculate the number of elements in elename and print out the contents
+ of the spice netlist by iterating through the lists - elename, elenode1
+ , elenode2 and elevalue.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Printing reconstructed matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+print "Reconstructed listing"
+\end_layout
+
+\begin_layout Plain Layout
+
+for i in range(len(elename)):
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "%s %s %s %s" %(elename[i],elenode1[i],elenode2[i],elevaluenum[i])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Printing the circuit specifications with modifed values.
+ We calculate the number of elements in elename and print out the contents
+ of the spice netlist by iterating through the lists - elename, elenode1
+ , elenode2 and elevaluenum.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Printing the mapping of nodes
+\end_layout
+
+\begin_layout Plain Layout
+
+print "List of nodes:"
+\end_layout
+
+\begin_layout Plain Layout
+
+for key, value in sorted(nodes.iteritems(), key=lambda (k,v): (v,k)):
+\end_layout
+
+\begin_layout Plain Layout
+
+    print "%s: %s" % (value, key)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Printing out the mapping of nodes.
+ The nodes dict is iterated through and sorted in an increasing order by
+ making use of the sorted built in function.
+ The key and value pair are printed out demonstarting the node and it's
+ unique index that has been assigned to it.
+\end_layout
+
+\begin_layout Section
+Input to the Python Script
+\end_layout
+
+\begin_layout Standard
+The file lyx3.spc is passed as input argument to the python script.
+ The contents of the lyx3.spc file is as follows:
+\end_layout
+
+\begin_layout LyX-Code
+.circuit
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4k
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 2.485p
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4.0k
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5
+\end_layout
+
+\begin_layout LyX-Code
+.end
+\end_layout
+
+\begin_layout Section
+Output of the Python Script
+\end_layout
+
+\begin_layout Standard
+The following is the output obtained when the python script is run.
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 80.96u
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4k
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 2.485p
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4.0k
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5
+\end_layout
+
+\begin_layout LyX-Code
+Reconstructed listing
+\end_layout
+
+\begin_layout LyX-Code
+L1 1 2 8.096e-05
+\end_layout
+
+\begin_layout LyX-Code
+L2 2 3 8.096e-05
+\end_layout
+
+\begin_layout LyX-Code
+R1 3 GND 4000.0
+\end_layout
+
+\begin_layout LyX-Code
+C1 2 GND 2.485e-12
+\end_layout
+
+\begin_layout LyX-Code
+R2 in 1 4000.0
+\end_layout
+
+\begin_layout LyX-Code
+V1 in GND 5.0
+\end_layout
+
+\begin_layout LyX-Code
+List of nodes:
+\end_layout
+
+\begin_layout LyX-Code
+0: GND
+\end_layout
+
+\begin_layout LyX-Code
+1: 1
+\end_layout
+
+\begin_layout LyX-Code
+2: 2
+\end_layout
+
+\begin_layout LyX-Code
+3: 3
+\end_layout
+
+\begin_layout LyX-Code
+4: in
+\end_layout
+
+\begin_layout Standard
+The first part of the output simply prints out the content of the spice
+ netlist file.
+ The second part of the output is the reconstructed listing with the modified
+ values of the element values.
+ The third part of the output is the list of nodes wherein each node is
+ uniquely identified by a unique index.
+\end_layout
+
+\end_body
+\end_document
