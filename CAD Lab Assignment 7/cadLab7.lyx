@@ -1,0 +1,1372 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Vector Operations and Functions in Python
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+October 4, 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment we make use of the numpy,scipy and matplotlib modules
+ of Python to calculate the integral of a function using the in-built functions
+ and using the trapezoidal rule to calculate the integral of the fucntion.
+ We then plot the estimated and exact errors by the trapezoidal rule by
+ making use of the matplotlib module.
+\end_layout
+
+\begin_layout Section
+Python Implementation of Program
+\end_layout
+
+\begin_layout Standard
+The following contains the code snippet of the Python script along with
+ the explanation provided below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Importing the necessary plot for vectroizing and plotting 
+\end_layout
+
+\begin_layout Plain Layout
+
+from pylab import *
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np
+\end_layout
+
+\begin_layout Plain Layout
+
+import matplotlib.pyplot as plt
+\end_layout
+
+\begin_layout Plain Layout
+
+from scipy.integrate import quad
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Code snippet to include all the necessary modules of Python which are made
+ use of for plotting the graphs and vectorizing the functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the function 1/1+x^2
+\end_layout
+
+\begin_layout Plain Layout
+
+def func(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	return 1.0/(1.0 + (x*x))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Vectorizing the function to take a vector as an input
+\end_layout
+
+\begin_layout Plain Layout
+
+func = np.vectorize(func)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the function to return 1/1+x^2 and using the vectorize method to
+ allow the function func to accept a vector as its arguments.
+ This is done by making use of the vectorize function as a part of the numpy
+ module.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the ftrap function to give back new value of x,y and h
+\end_layout
+
+\begin_layout Plain Layout
+
+def ftrap(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	h = (max(x) - min(x))/(2*(len(x)-1))
+\end_layout
+
+\begin_layout Plain Layout
+
+	x = np.arange(min(x),max(x),h)
+\end_layout
+
+\begin_layout Plain Layout
+
+	y = (np.cumsum(func(x),dtype=float) - ((1.0/2.0)*(func(0)+func(x)))) * h
+\end_layout
+
+\begin_layout Plain Layout
+
+	return (x,y,h)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the ftrap function which returns back the new values of the x,
+ y and h.
+ Eveytime this function is called the value of interval ie h is halved and
+ the new value of the vector x is calculated, corresponding to the new value
+ of the x, new value of y is calculated and the new values of x,y and h
+ returned back into the trapezoidrule function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Making a vector which holds values from 0.0 to 5.0 in steps of 0.1
+\end_layout
+
+\begin_layout Plain Layout
+
+x = np.arange(0.0,5.1,0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining an anonymous function to take a single input
+\end_layout
+
+\begin_layout Plain Layout
+
+f = lambda t: 1.0/(1.0 + t*t)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Declaration of useful lists
+\end_layout
+
+\begin_layout Plain Layout
+
+quadValue = [] # To hold the value obtained from quad function
+\end_layout
+
+\begin_layout Plain Layout
+
+quadError = [] # To hold the error obtained from quad function
+\end_layout
+
+\begin_layout Plain Layout
+
+errors = [] # To hold the error between quad and arctan function
+\end_layout
+
+\begin_layout Plain Layout
+
+valueh = [] # To hold the values of h 
+\end_layout
+
+\begin_layout Plain Layout
+
+valueEstimateErr = [] # To hold the values of the estimate errors
+\end_layout
+
+\begin_layout Plain Layout
+
+valueExactErr = [] # To hold the values of the exact error
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Declaring a vector x with intial value 0.0 , final value 5.0 with steps of
+ 0.1 by making use of arange function from the numpy module.
+ Also we declare an anonymous function by making use of the lambda function
+ and assigning it to value f.
+ Declaring all the required lists whose functioning is explained in the
+ comments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Iterating through the vector x and finding corresponding value of quad
+\end_layout
+
+\begin_layout Plain Layout
+
+for i in range(len(x)):
+\end_layout
+
+\begin_layout Plain Layout
+
+	y,err = quad(f,0,x[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+	quadValue.append(y)
+\end_layout
+
+\begin_layout Plain Layout
+
+	quadError.append(err)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We use a for loop to iterate through the vector x and calculate the integral
+ using the quad function which is available in scipy.integrate module.
+ The quad function returns a tuple of two values.
+ The first value is the integral of the function from a to b.
+ The second value is an estimate of the absolute error in the result.
+ Both of these values are added to the quadValue and quadError lists.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the display of plot of func v/s x
+\end_layout
+
+\begin_layout Plain Layout
+
+def displayfuncx(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.figure(1) # Setting it on figure 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.plot(x,func(x),'ro',x,func(x)) # Plotting the graph 
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.title(r"Plot of $1/(1+t^{2})$") # Setting the title of the graph
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.xlabel(r"$t$") # Setting the X-label 
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.ylabel(r"$1/(1+t^{2})$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.show() # Displaying the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+displayfuncx(x) # Calling the display function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Function to display the graph between 
+\begin_inset Formula $1/(1+t^{2})$
+\end_inset
+
+ and 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Creating a taninv vector by using in-built arctan function
+\end_layout
+
+\begin_layout Plain Layout
+
+taninv = np.arctan(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the display of plot of taninv v/s x
+\end_layout
+
+\begin_layout Plain Layout
+
+def displaytaninv(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.figure(2) # Setting it on figure 2
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.plot(x,quadValue,'ro',x,taninv,'k-') # Plotting quadValue v/s x as red
+ dots and taninv function as black line
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.title(r"Plot of $arctan(x)$ v/s $x$") # Setting the title of the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.xlabel(r"$u$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.ylabel(r"$
+\backslash
+int du/(1+u^{2})$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.legend(("quad fn",r"$arctan(u)$")) # Setting the Legend for the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.show() # Displaying the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+displaytaninv(x) # Calling the display funtion
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We create a vector taninv by calling the arctan function on x.
+ We then plot the graph for 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Iterating through vector x to calculate the error and appending in the
+ errors list
+\end_layout
+
+\begin_layout Plain Layout
+
+for i in range(len(x)):
+\end_layout
+
+\begin_layout Plain Layout
+
+	errors.append(abs(taninv[i] - quadValue[i]))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the display of plot of Error v/s x
+\end_layout
+
+\begin_layout Plain Layout
+
+def displayerror():
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.figure(3) # Setting it on figure 3
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.title(r"Error in $
+\backslash
+int dx/(1+x^{2})$") # Setting the title of the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.xlabel(r"$x$") # Setting the X - label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.ylabel("Error") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.semilogy(x,errors,"ro") # Plotting the semilog graph of log error v/s
+ x
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.show() # Displaying the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+displayerror() # Calling the display function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We then iterate through the vector x and calculate the error in the values
+ obtained from the inbuilt function - arctan and quad method to integrate
+ and find the function.
+ Function to display the graph between 
+\begin_inset Formula $\int dx/(1+x^{2})$
+\end_inset
+
+ and 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def displayIntegral(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	h = 0.1 # Initializing the value of h
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.figure(4) # Setting the plot to figure 4
+\end_layout
+
+\begin_layout Plain Layout
+
+	y = np.cumsum(func(x),dtype=float) - ((1.0/2.0)*(func(0)+func(x))) # Calculating
+ the value of y
+\end_layout
+
+\begin_layout Plain Layout
+
+	y = y * h # Making y = y*h
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.title(r"Plot of $arctan(x)$ v/s $x$ using Trapezoid Rule") # Setting
+ the title of the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.xlabel(r"$x$") # Setting the X -label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.ylabel(r"$arctan(x)$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.plot(x,y) # Plotting the x and y
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.show() # Displaying the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+displayIntegral(x) # Calling the display function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Function to plot the graph of 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+ using the Trapezoidal Rule.
+ Instead of calculating the integral using the quad or using the built in
+ arctan function we write our own trapezoidal algorithm to calculate the
+ integral of the function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the trapezoid rule for calculating the integral
+\end_layout
+
+\begin_layout Plain Layout
+
+def TrapezoidRule(x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	temp = x # Declaring a temp vector
+\end_layout
+
+\begin_layout Plain Layout
+
+	err = [] # List initialization
+\end_layout
+
+\begin_layout Plain Layout
+
+	h = 0.1 # Initialising the value of h
+\end_layout
+
+\begin_layout Plain Layout
+
+	err.append(0.5) # Setting initial value of error
+\end_layout
+
+\begin_layout Plain Layout
+
+	while (max(err) > 1e-8):
+\end_layout
+
+\begin_layout Plain Layout
+
+		err = [] # list initialization
+\end_layout
+
+\begin_layout Plain Layout
+
+		yprev = (np.cumsum(func(temp),dtype=float) - ((1.0/2.0)*(func(0)+func(temp))))
+ * h # Calculating the value of yprev
+\end_layout
+
+\begin_layout Plain Layout
+
+		tempnew , ynew , h = ftrap(temp) # Getting the value of new temp, new
+ y and new h
+\end_layout
+
+\begin_layout Plain Layout
+
+		valueExactErr.append(max(abs(yprev - np.arctan(temp)))) # Adding the value
+ of the exact error
+\end_layout
+
+\begin_layout Plain Layout
+
+		for k in range(len(temp)-1):
+\end_layout
+
+\begin_layout Plain Layout
+
+			err.append(ynew[2*k] - yprev[k]) # Adding the value of the err list
+\end_layout
+
+\begin_layout Plain Layout
+
+		valueh.append(h) # Appending the new value of h
+\end_layout
+
+\begin_layout Plain Layout
+
+		valueEstimateErr.append(max(err)) # Appending the value of the estimate
+ error
+\end_layout
+
+\begin_layout Plain Layout
+
+		temp = tempnew # Assigning old temp value to new temp value
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+TrapezoidRule(x) # Calling the trapezoidrule function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Function to define the trapezoidal rule to calculate the integral of the
+ function.
+ We keep on reducing the step value between the extreme value of x by 2.
+ We then compute the value of new x and y and continue doing this till the
+ maximum of errors between the values of y for two consecutive h's is more
+ than 
+\begin_inset Formula $10^{-8}$
+\end_inset
+
+.
+ That is our tolerance is 
+\begin_inset Formula $10^{-8}$
+\end_inset
+
+.
+ The values of corresponding h,estimated error and exact errors are recorded
+ in corresponding lists.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Defining the display Error Plot function
+\end_layout
+
+\begin_layout Plain Layout
+
+def displayErrorPlot():
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.figure(5) # Setting it to figure 5
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.xlabel(r"$log$ $h$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.ylabel(r"Error ($log$ $err$)") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.title(r"$log$ - $log$ plot of $Error$ v/s $h$") # Setting the title
+ of the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.plot(log10(valueh),log10(valueEstimateErr),"g+",log10(valueh),log10(valueExa
+ctErr),'ro') # Plotting the log10 - log10 graph
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.legend(("Estimated Error","Exact Error")) # Setting the legend for the
+ graph
+\end_layout
+
+\begin_layout Plain Layout
+
+	plt.show() # Displaying the plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+displayErrorPlot() # Calling the Error plot function
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Function to display to the 
+\begin_inset Formula $log$
+\end_inset
+
+ - 
+\begin_inset Formula $log$
+\end_inset
+
+ plot of 
+\begin_inset Formula $Error$
+\end_inset
+
+ v/s 
+\begin_inset Formula $h$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Output of the Python Script
+\end_layout
+
+\begin_layout Standard
+We get the following plots for the python script.
+\end_layout
+
+\begin_layout Subsection
+Plot of 
+\begin_inset Formula $1/(1+t^{2})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plot of 
+\begin_inset Formula $1/(1+t^{2})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Plot of 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plot of 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Error in 
+\begin_inset Formula $\int dx/(1+x^{2})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_3.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Error in 
+\begin_inset Formula $\int dx/(1+x^{2})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Plot of 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+ using Trapezoid Rule
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_4.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plot of 
+\begin_inset Formula $arctan(x)$
+\end_inset
+
+ v/s 
+\begin_inset Formula $x$
+\end_inset
+
+ using Trapezoid Rule
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $log$
+\end_inset
+
+ - 
+\begin_inset Formula $log$
+\end_inset
+
+ plot of 
+\begin_inset Formula $Error$
+\end_inset
+
+ v/s 
+\begin_inset Formula $h$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_5.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $log$
+\end_inset
+
+ - 
+\begin_inset Formula $log$
+\end_inset
+
+ plot of 
+\begin_inset Formula $Error$
+\end_inset
+
+ v/s 
+\begin_inset Formula $h$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
