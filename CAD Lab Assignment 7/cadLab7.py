@@ -122,4 +122,3 @@ def displayErrorPlot():
 	plt.show() # Displaying the plot
 
 displayErrorPlot() # Calling the Error plot function
-
