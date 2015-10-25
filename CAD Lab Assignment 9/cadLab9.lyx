@@ -1,0 +1,1508 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Simulation of a Tube Light
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+October 25, 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment, we will simulate a tube light.
+ Python is very good at simulating models.We use a 1-Dimensional model of
+ the tubelight.The problem is to plot the intensity as a function of position
+ after the process has reached steady state.
+ There are 
+\begin_inset Quotes eld
+\end_inset
+
+dark spaces
+\begin_inset Quotes erd
+\end_inset
+
+ and we will try to find in our simulation.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+A uniform electric field is present,that accelerates electrons.
+ Electrons are emitted by the cathode with zero energy,and accelerate in
+ this field.
+ When they get beyond a threshold energy 
+\begin_inset Formula $E_{0}$
+\end_inset
+
+ , they can drive atoms to excited states.
+ The relaxation of these atoms results in light emission.
+ In our model, we will assume that the relaxation is immediate.
+ The electron loses all its energy and the process starts again.
+ Electrons reaching the anode are absorbed and lost.
+ Each 
+\begin_inset Quotes eld
+\end_inset
+
+tim e step
+\begin_inset Quotes erd
+\end_inset
+
+ , an average of N electrons are introduced at the cathode.
+ The actual number of electrons is determined by finding the integer part
+ of a random number that is 
+\begin_inset Quotes eld
+\end_inset
+
+normally distributed
+\begin_inset Quotes erd
+\end_inset
+
+ with a standard deviation of 2 and mean 10.
+\end_layout
+
+\begin_layout Section
+Python Program
+\end_layout
+
+\begin_layout Standard
+The following code chunks contains the Python Program.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Importing necessary libraries
+\end_layout
+
+\begin_layout Plain Layout
+
+import sys # Used for taking command line arguments
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np # Used for importing numpy
+\end_layout
+
+\begin_layout Plain Layout
+
+from pylab import * # Used for plotting and making use of array
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Importing all the necessary modules used as explained in the comments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Check for command line arguments
+\end_layout
+
+\begin_layout Plain Layout
+
+if(len(sys.argv)!=6):
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "Usage <n> <M> <nk> <u0> <p>"
+\end_layout
+
+\begin_layout Plain Layout
+
+	exit(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+else:
+\end_layout
+
+\begin_layout Plain Layout
+
+	script,n,M,nk,u0,p = sys.argv
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Checking for the command line arguments.
+ If there is an error, it throws the correct syntax.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Converting string values into integers and float
+\end_layout
+
+\begin_layout Plain Layout
+
+n = int(n) 
+\end_layout
+
+\begin_layout Plain Layout
+
+M = int(M)
+\end_layout
+
+\begin_layout Plain Layout
+
+nk = int(nk)
+\end_layout
+
+\begin_layout Plain Layout
+
+u0 = int(u0)
+\end_layout
+
+\begin_layout Plain Layout
+
+p = float(p)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Setting up the standard deviation
+\end_layout
+
+\begin_layout Plain Layout
+
+Msig = 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explained in the comments
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Creating zero vectors 
+\end_layout
+
+\begin_layout Plain Layout
+
+xx = np.zeros(n*M) # Electron position xx
+\end_layout
+
+\begin_layout Plain Layout
+
+u = np.zeros(n*M) # Electron velocity u
+\end_layout
+
+\begin_layout Plain Layout
+
+dx = np.zeros(n*M) # Displacement in current turn dx
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Creating empty lists
+\end_layout
+
+\begin_layout Plain Layout
+
+I = [] # Intensity of emitted light
+\end_layout
+
+\begin_layout Plain Layout
+
+X = [] # Electron position
+\end_layout
+
+\begin_layout Plain Layout
+
+V = [] # Electron Velocity
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explained in comments
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for i in range(nk):
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Loop over the turns
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	m = (randn() * Msig) + M # Inserting m electrons everytime
+\end_layout
+
+\begin_layout Plain Layout
+
+	jj = array(where(xx==0)) # Taking all the values where xx = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	jj = jj[[0],0:m] # Selecting the first m electrons out of it
+\end_layout
+
+\begin_layout Plain Layout
+
+	xx[jj[0]] = 1 # Assigning those indices as 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inject M new elecrons.
+ First we determine the actual number of electrons injectd as m = randn()*Msig
+ + M.
+ This calculates the number injected this turn by rolling a 
+\begin_inset Quotes eld
+\end_inset
+
+normally distributed random number
+\begin_inset Quotes erd
+\end_inset
+
+, multiplying it by the standard deviation and adding the mean value(both
+ are specified on the command line).
+ For these electrons,initialize the position to xi = 1.
+ So the tubelight stretches from 1 to n.
+ A position of 0 means an unused slot.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	ii = array(where(xx>0)) # Checking for where xx>0 and taking in the indices
+\end_layout
+
+\begin_layout Plain Layout
+
+	X.extend(xx[ii[0]].tolist()) # Adding those position to electron position
+ list
+\end_layout
+
+\begin_layout Plain Layout
+
+	V.extend(u[ii[0]].tolist()) # Adding those position to electron velocity
+ list
+\end_layout
+
+\begin_layout Plain Layout
+
+	dx[ii[0]] = u[ii[0]] + 0.5 # Accelerating the dx vector
+\end_layout
+
+\begin_layout Plain Layout
+
+	xx[ii[0]] = xx[ii[0]] + dx[ii] # Incrementing the xx vector
+\end_layout
+
+\begin_layout Plain Layout
+
+	u[ii[0]] = u[ii[0]] + 1 # Incrementing the velocity vector
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We find the electrons present in the chamber.The answer is that if an electron
+ is in the chamber,its position must satisfy 0<x<l, where L = n for this
+ simulation.
+ We simplify things by assuming that anytime the electron reaches x = L,it
+ is reset to x = 0.
+ So,if an entry has zero x position,that electron has not yet been injected.
+ Only x>0 entries correspond to electrons within the chamber.
+ We do this by finding all those electrons whose position is greater than
+ 0.
+ We make use of the where command to do this.
+ We also compute the displacement during this turn,assuming that the Electric
+ Field creates an acceleration of 1.
+ We also advance the electron position and velocity for the turn.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	bb = array(where(xx>n)) # Checking for if the electron has crossed the
+ tube length
+\end_layout
+
+\begin_layout Plain Layout
+
+	xx[bb[0]] = 0 # Making it's position 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	dx[bb[0]] = 0 # Making it's displacement 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	u[bb[0]] = 0 # Making it's velocity 0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We then determine which particles have hit the anode(their position would
+ be beyond n).
+ Using the where command for this.We also set the positions,displacements
+ and velocities of these particles to zero.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	kk = array(where(u>u0)) # Checking for where the velocity has crossed the
+ threshold velocity
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(size(kk[0])>0):
+\end_layout
+
+\begin_layout Plain Layout
+
+		pp = array([p for i in range(0,size(kk[0]))]) # Creating a array of probabilit
+y p
+\end_layout
+
+\begin_layout Plain Layout
+
+		ll = array(where(random_sample(size(kk[0],))<=pp)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+		kl = kk[[0],ll[0]]
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (size(kl)>0):
+\end_layout
+
+\begin_layout Plain Layout
+
+			u[kl] = 0 # Assigning velocity back to 0
+\end_layout
+
+\begin_layout Plain Layout
+
+			xx[kl] = xx[kl] - ( dx[kl] * random_sample(size(kl[0]),) ) # Reducing
+ the position
+\end_layout
+
+\begin_layout Plain Layout
+
+			I.extend(xx[kl].tolist()) # Appending to Intensity list
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We then find the electrons whose velocity is greater than or equal to the
+ threshold.Assume that kk is the vector of the indices corresponding to energetic
+ electrons.Create a uniformly distributed random vector of length len(kk)
+ and find the indices that are less than p,the probability of a collision.kl
+ now contains the indices of those energetic electrons that will suffer
+ a collision.
+ Reset the velocities of these electrons to zero.
+ The collision could have occured at any point between the previous xi and
+ current xi.
+ The excited atoms at this location resulted in emission from that point.So
+ we have to add a photon at that point.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Function to display the Position Histogram
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotPositionHistogram():
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+	hist(X,bins=100,range=[0,100])
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel("Position")
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel("Electron Density")
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Population Plot of X")
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Function to display the Intensity Histogram
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotIntensityHistogram():
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	count = hist(I,bins=100,range=[0,100])
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel("Position")
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel("Population count/intensity")
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Population of the light intensity")
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+	return count
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Function to display the Electron Phase Space Plot
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotElectronPhaseSpace():
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(2)
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(X,V,'ro')
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel("Position")
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel("Velocity")
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Electron Phase Space")
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Tabulating the Intensity Plot
+\end_layout
+
+\begin_layout Plain Layout
+
+def printIntensity(count):
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "Intensity Data:"
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "-------------"
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "xpos | count"
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "-------------"
+\end_layout
+
+\begin_layout Plain Layout
+
+	for i in range(len(count[0])):
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (i>=9):
+\end_layout
+
+\begin_layout Plain Layout
+
+			print "%d   |    %d" %(count[1][i]+1,count[0][i])
+\end_layout
+
+\begin_layout Plain Layout
+
+		else:
+\end_layout
+
+\begin_layout Plain Layout
+
+			print "%d    |    %d" %(count[1][i]+1,count[0][i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Calling of declared functions
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPositionHistogram()
+\end_layout
+
+\begin_layout Plain Layout
+
+count = plotIntensityHistogram()
+\end_layout
+
+\begin_layout Plain Layout
+
+plotElectronPhaseSpace()
+\end_layout
+
+\begin_layout Plain Layout
+
+printIntensity(count)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Code explained in comments.
+\end_layout
+
+\begin_layout Section
+Output of the Program
+\end_layout
+
+\begin_layout Subsection
+
+\series medium
+Population Plot of X
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_0.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Population Plot of X
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Histogram of the light intensity
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Histogram of the light intensity
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Electron Phase Space
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Electron Phase Space
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Intensity Data
+\end_layout
+
+\begin_layout Standard
+The following is the tabulation of the histogram.
+\end_layout
+
+\begin_layout LyX-Code
+Intensity Data:
+\end_layout
+
+\begin_layout LyX-Code
+-------------
+\end_layout
+
+\begin_layout LyX-Code
+xpos | count
+\end_layout
+
+\begin_layout LyX-Code
+-------------
+\end_layout
+
+\begin_layout LyX-Code
+1    |    0
+\end_layout
+
+\begin_layout LyX-Code
+2    |    0
+\end_layout
+
+\begin_layout LyX-Code
+3    |    0
+\end_layout
+
+\begin_layout LyX-Code
+4    |    0
+\end_layout
+
+\begin_layout LyX-Code
+5    |    0
+\end_layout
+
+\begin_layout LyX-Code
+6    |    0
+\end_layout
+
+\begin_layout LyX-Code
+7    |    0
+\end_layout
+
+\begin_layout LyX-Code
+8    |    0
+\end_layout
+
+\begin_layout LyX-Code
+9    |    0
+\end_layout
+
+\begin_layout LyX-Code
+10   |    0
+\end_layout
+
+\begin_layout LyX-Code
+11   |    0
+\end_layout
+
+\begin_layout LyX-Code
+12   |    0
+\end_layout
+
+\begin_layout LyX-Code
+13   |    0
+\end_layout
+
+\begin_layout LyX-Code
+14   |    51
+\end_layout
+
+\begin_layout LyX-Code
+15   |    93
+\end_layout
+
+\begin_layout LyX-Code
+16   |    106
+\end_layout
+
+\begin_layout LyX-Code
+17   |    109
+\end_layout
+
+\begin_layout LyX-Code
+18   |    88
+\end_layout
+
+\begin_layout LyX-Code
+19   |    111
+\end_layout
+
+\begin_layout LyX-Code
+20   |    78
+\end_layout
+
+\begin_layout LyX-Code
+21   |    49
+\end_layout
+
+\begin_layout LyX-Code
+22   |    72
+\end_layout
+
+\begin_layout LyX-Code
+23   |    64
+\end_layout
+
+\begin_layout LyX-Code
+24   |    62
+\end_layout
+
+\begin_layout LyX-Code
+25   |    71
+\end_layout
+
+\begin_layout LyX-Code
+26   |    65
+\end_layout
+
+\begin_layout LyX-Code
+27   |    46
+\end_layout
+
+\begin_layout LyX-Code
+28   |    42
+\end_layout
+
+\begin_layout LyX-Code
+29   |    69
+\end_layout
+
+\begin_layout LyX-Code
+30   |    37
+\end_layout
+
+\begin_layout LyX-Code
+31   |    78
+\end_layout
+
+\begin_layout LyX-Code
+32   |    67
+\end_layout
+
+\begin_layout LyX-Code
+33   |    74
+\end_layout
+
+\begin_layout LyX-Code
+34   |    60
+\end_layout
+
+\begin_layout LyX-Code
+35   |    25
+\end_layout
+
+\begin_layout LyX-Code
+36   |    44
+\end_layout
+
+\begin_layout LyX-Code
+37   |    71
+\end_layout
+
+\begin_layout LyX-Code
+38   |    51
+\end_layout
+
+\begin_layout LyX-Code
+39   |    69
+\end_layout
+
+\begin_layout LyX-Code
+40   |    70
+\end_layout
+
+\begin_layout LyX-Code
+41   |    74
+\end_layout
+
+\begin_layout LyX-Code
+42   |    51
+\end_layout
+
+\begin_layout LyX-Code
+43   |    47
+\end_layout
+
+\begin_layout LyX-Code
+44   |    48
+\end_layout
+
+\begin_layout LyX-Code
+45   |    63
+\end_layout
+
+\begin_layout LyX-Code
+46   |    43
+\end_layout
+
+\begin_layout LyX-Code
+47   |    63
+\end_layout
+
+\begin_layout LyX-Code
+48   |    57
+\end_layout
+
+\begin_layout LyX-Code
+49   |    59
+\end_layout
+
+\begin_layout LyX-Code
+50   |    63
+\end_layout
+
+\begin_layout LyX-Code
+51   |    68
+\end_layout
+
+\begin_layout LyX-Code
+52   |    61
+\end_layout
+
+\begin_layout LyX-Code
+53   |    45
+\end_layout
+
+\begin_layout LyX-Code
+54   |    52
+\end_layout
+
+\begin_layout LyX-Code
+55   |    58
+\end_layout
+
+\begin_layout LyX-Code
+56   |    66
+\end_layout
+
+\begin_layout LyX-Code
+57   |    39
+\end_layout
+
+\begin_layout LyX-Code
+58   |    61
+\end_layout
+
+\begin_layout LyX-Code
+59   |    56
+\end_layout
+
+\begin_layout LyX-Code
+60   |    47
+\end_layout
+
+\begin_layout LyX-Code
+61   |    48
+\end_layout
+
+\begin_layout LyX-Code
+62   |    59
+\end_layout
+
+\begin_layout LyX-Code
+63   |    58
+\end_layout
+
+\begin_layout LyX-Code
+64   |    62
+\end_layout
+
+\begin_layout LyX-Code
+65   |    62
+\end_layout
+
+\begin_layout LyX-Code
+66   |    47
+\end_layout
+
+\begin_layout LyX-Code
+67   |    53
+\end_layout
+
+\begin_layout LyX-Code
+68   |    52
+\end_layout
+
+\begin_layout LyX-Code
+69   |    50
+\end_layout
+
+\begin_layout LyX-Code
+70   |    59
+\end_layout
+
+\begin_layout LyX-Code
+71   |    57
+\end_layout
+
+\begin_layout LyX-Code
+72   |    54
+\end_layout
+
+\begin_layout LyX-Code
+73   |    60
+\end_layout
+
+\begin_layout LyX-Code
+74   |    45
+\end_layout
+
+\begin_layout LyX-Code
+75   |    40
+\end_layout
+
+\begin_layout LyX-Code
+76   |    55
+\end_layout
+
+\begin_layout LyX-Code
+77   |    63
+\end_layout
+
+\begin_layout LyX-Code
+78   |    48
+\end_layout
+
+\begin_layout LyX-Code
+79   |    50
+\end_layout
+
+\begin_layout LyX-Code
+80   |    50
+\end_layout
+
+\begin_layout LyX-Code
+81   |    47
+\end_layout
+
+\begin_layout LyX-Code
+82   |    49
+\end_layout
+
+\begin_layout LyX-Code
+83   |    61
+\end_layout
+
+\begin_layout LyX-Code
+84   |    52
+\end_layout
+
+\begin_layout LyX-Code
+85   |    56
+\end_layout
+
+\begin_layout LyX-Code
+86   |    60
+\end_layout
+
+\begin_layout LyX-Code
+87   |    51
+\end_layout
+
+\begin_layout LyX-Code
+88   |    47
+\end_layout
+
+\begin_layout LyX-Code
+89   |    65
+\end_layout
+
+\begin_layout LyX-Code
+90   |    47
+\end_layout
+
+\begin_layout LyX-Code
+91   |    43
+\end_layout
+
+\begin_layout LyX-Code
+92   |    47
+\end_layout
+
+\begin_layout LyX-Code
+93   |    44
+\end_layout
+
+\begin_layout LyX-Code
+94   |    67
+\end_layout
+
+\begin_layout LyX-Code
+95   |    34
+\end_layout
+
+\begin_layout LyX-Code
+96   |    25
+\end_layout
+
+\begin_layout LyX-Code
+97   |    26
+\end_layout
+
+\begin_layout LyX-Code
+98   |    22
+\end_layout
+
+\begin_layout LyX-Code
+99   |    15
+\end_layout
+
+\begin_layout LyX-Code
+100  |    2
+\end_layout
+
+\end_body
+\end_document
