@@ -1,0 +1,982 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Laplace Equations
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Date
+November 1, 2015
+\end_layout
+
+\begin_layout Abstract
+In this assignment, we will try to simulate a resistor by making a potential
+ matrix and giving the error,contour,surface and vectors plot of current
+ through a resistor.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+In this assignment we solve for currents in a resistor.
+ The current depend on the shape of the resistor and we want to see if R
+ = (rho)*L/A works or not.
+\end_layout
+
+\begin_layout Section
+Python Code
+\end_layout
+
+\begin_layout Standard
+The following contains snippets of code along with the description of it's
+ functionality
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Importing all the required modules
+\end_layout
+
+\begin_layout Plain Layout
+
+import sys # Module required for command line arguments
+\end_layout
+
+\begin_layout Plain Layout
+
+from pylab import * # Module for using numpy and matplotlib
+\end_layout
+
+\begin_layout Plain Layout
+
+import mpl_toolkits.mplot3d.axes3d as p3 # Module for plotting surface plots
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this we include all the required module for the script to work.
+ This contains the modules for making 3D surface plots, calculating Least
+ Squares and taking in command line arguments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Checking for command line arguments
+\end_layout
+
+\begin_layout Plain Layout
+
+if(len(sys.argv)!=6):
+\end_layout
+
+\begin_layout Plain Layout
+
+	print "Usage <Nx> <Ny> <Nbegin> <Nend> <Niter>" # Correct syntax of command
+ line arguments
+\end_layout
+
+\begin_layout Plain Layout
+
+	exit(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+else:
+\end_layout
+
+\begin_layout Plain Layout
+
+	script , Nx , Ny , Nbegin , Nend , Niter = sys.argv
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Converting the arguments into corresponding integers
+\end_layout
+
+\begin_layout Plain Layout
+
+Nx = int(Nx) # Size along X
+\end_layout
+
+\begin_layout Plain Layout
+
+Ny = int(Ny) # Size along Y
+\end_layout
+
+\begin_layout Plain Layout
+
+Nbegin = int(Nbegin) # Start of electrode on each side
+\end_layout
+
+\begin_layout Plain Layout
+
+Nend = int(Nend) # End of electrode on each side
+\end_layout
+
+\begin_layout Plain Layout
+
+Niter = int(Niter) # Number of iterations to perform
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Parameters for running the simulations are taken in from the command line
+ and converted into the corresponding integers.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Creation of the phi matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+phi = zeros((Nx,Ny))
+\end_layout
+
+\begin_layout Plain Layout
+
+phi[0,Nbegin:Nend] = 1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Decalring an errors list
+\end_layout
+
+\begin_layout Plain Layout
+
+errors = [] 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We create the potential matrix and create an empty list for taking in the
+ errors.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Running the simulation Niter times
+\end_layout
+
+\begin_layout Plain Layout
+
+for k in range(Niter):
+\end_layout
+
+\begin_layout Plain Layout
+
+	oldphi = phi.copy() # Making a copy of phi and storing in oldphi
+\end_layout
+
+\begin_layout Plain Layout
+
+	# Updating the inner values of phi
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[1:-1,1:-1] = 0.25*(phi[1:-1,0:-2] + phi[1:-1,2:] + phi[0:-2,1:-1] +
+ phi[2:,1:-1])
+\end_layout
+
+\begin_layout Plain Layout
+
+	# updating the boundary conditions
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[1:-1,0] = phi[1:-1,1] # Updating the left boundary
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[1:-1,-1] = phi[1:-1,-2] # Updating the right boundary
+\end_layout
+
+\begin_layout Plain Layout
+
+	# Updating the top boundary
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[0,Nend:] = phi[1,Nend:]
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[0,1:Nbegin] = phi[1,1:Nbegin] 
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[-1,1:Nbegin] = phi[-2,1:Nbegin]
+\end_layout
+
+\begin_layout Plain Layout
+
+	# Updating the bottom boundary
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[0,Nend:] = phi[1,Nend:]
+\end_layout
+
+\begin_layout Plain Layout
+
+	phi[-1,Nend:] = phi[-2,Nend:]
+\end_layout
+
+\begin_layout Plain Layout
+
+	# List of errors
+\end_layout
+
+\begin_layout Plain Layout
+
+	errors.append(abs(phi-oldphi).max())
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Running the simulation for Niter number of times.
+ Inside the for loop, we write the code for updating the values of the potential
+ matrix and calculating the corresponding errors.
+ Code is explained in the comments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xk = arange(0,Niter) # Niter vector
+\end_layout
+
+\begin_layout Plain Layout
+
+M0 = [1 for i in range(Niter)] # 1 vector
+\end_layout
+
+\begin_layout Plain Layout
+
+M = c_[M0,xk] 
+\end_layout
+
+\begin_layout Plain Layout
+
+logA1, B1 = lstsq(M,log(errors))[0] # Least square estimation to find the
+ cofficients for all values of xk
+\end_layout
+
+\begin_layout Plain Layout
+
+logA2, B2 = lstsq(M[500::],log(errors[500::]))[0]  # Least square estimation
+ to find the cofficients for some values of xk
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+A1 = exp(logA1) # Calculating A1
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 = A1*exp(B1*xk) # Calculating y1
+\end_layout
+
+\begin_layout Plain Layout
+
+A2 = exp(logA2) # Calculating A2
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 = A2*exp(B2*xk[500:]) # Calculating y2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calculating the coefficients for best fit curve for the error plot.
+ Two different fits are calculated.
+ One for all the values of Niter values and one after running the simulation
+ for 500 times.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotError():
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Evolution of error with iteration") # Setting the title
+\end_layout
+
+\begin_layout Plain Layout
+
+	legend(("error","fit1","fit2")) # Setting the legend
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel("iteration") # xlabel
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r"$log$ error") # y label
+\end_layout
+
+\begin_layout Plain Layout
+
+	fit1 = semilogy(xk,y1) # Fit1 curve
+\end_layout
+
+\begin_layout Plain Layout
+
+	fit2 = semilogy(xk[500:],y2) # Fit2 curve
+\end_layout
+
+\begin_layout Plain Layout
+
+	err = semilogy(xk[::50],errors[::50],'ro') # Error Plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	legend((err,fit1,fit2),("error","fit1","fit2"))
+\end_layout
+
+\begin_layout Plain Layout
+
+	show() # Display of plot
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotError() # Calling of function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the error plot in the function plotError().
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x = arange(1,Nx+1) # Defining the x axis
+\end_layout
+
+\begin_layout Plain Layout
+
+y = arange(1,Ny+1) # Defining the y axis
+\end_layout
+
+\begin_layout Plain Layout
+
+X,Y = meshgrid(x,y) # Making a meshgrid
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotSurfacePlot():
+\end_layout
+
+\begin_layout Plain Layout
+
+	fig1 = figure(1) # Assigning a figure
+\end_layout
+
+\begin_layout Plain Layout
+
+	ax = p3.Axes3D(fig1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('The 3-D surface plot of the potential') # Setting the title
+\end_layout
+
+\begin_layout Plain Layout
+
+	surf = ax.plot_surface(Y,X,phi,rstride=1,cstride=1,cmap=cm.jet,linewidth=0,antial
+iased=False)
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSurfacePlot() # Calling the function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the surface plot of the potential.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotContour():
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('Contour Plot of Potential') # Setting the title
+\end_layout
+
+\begin_layout Plain Layout
+
+	contour(X,Y,phi) # Contour plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotContour()# Calling of function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the contour plot of the potential.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status collapsed
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotVector():
+\end_layout
+
+\begin_layout Plain Layout
+
+	Jx = zeros((Nx,Ny)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	Jy = zeros((Nx,Ny))
+\end_layout
+
+\begin_layout Plain Layout
+
+	Jx[:,1:-1] = 0.5*(phi[:,0:-2]-phi[:,2:])
+\end_layout
+
+\begin_layout Plain Layout
+
+	Jy[1:-1,:] = 0.5*(phi[0:-2,:]-phi[2:,:])
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("The vector plot of current flow") # Setting the title
+\end_layout
+
+\begin_layout Plain Layout
+
+	quiver(y,x,Jy.transpose(),Jx.transpose()) # Vector Plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	show()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotVector()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the vector plot of the current through the resistor.
+\end_layout
+
+\begin_layout Section
+Output Plots
+\end_layout
+
+\begin_layout Subsection
+Evolution of error with iteration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Evolution of error with iteration
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The 3-D surface plot of the potential
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The 3-D surface plot of the potential
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Contour Plot of Potential
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_3.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Contour Plot of Potential
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The vector plot of current flow
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_4.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The vector plot of current flow
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
