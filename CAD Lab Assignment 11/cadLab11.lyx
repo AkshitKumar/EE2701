@@ -1,0 +1,935 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+noweb
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Simulating Linear System Response
+\end_layout
+
+\begin_layout Author
+Akshit Kumar
+\end_layout
+
+\begin_layout Author
+EE14B127
+\end_layout
+
+\begin_layout Abstract
+In this assignment, we analyse 
+\begin_inset Quotes eld
+\end_inset
+
+Linear Time Invariant Systems
+\begin_inset Quotes erd
+\end_inset
+
+ with the numerical tools in Python.
+ LTI systems are what Electrical engineers spend most of their time thinking
+ about - linear circuit analysis or communication channels for example.
+\end_layout
+
+\begin_layout Section
+Python Program
+\end_layout
+
+\begin_layout Standard
+Below we can find the entire python program divided into multiple chunks
+ which are explained below or in comments in the program itself.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Importing necessary libraries
+\end_layout
+
+\begin_layout Plain Layout
+
+from scipy import *
+\end_layout
+
+\begin_layout Plain Layout
+
+from matplotlib.pyplot import *
+\end_layout
+
+\begin_layout Plain Layout
+
+import scipy.signal as signal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Importing all the necessary modules required for the Python program.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Assigning the time vector
+\end_layout
+
+\begin_layout Plain Layout
+
+t = linspace(0,20,201) # time constant is unity.
+ So step of 0.1 is ok.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Defining the time vector to be used to find the impulse response of off.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Function to plot x(t)
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotX():
+\end_layout
+
+\begin_layout Plain Layout
+
+	num = poly1d([1,0,2]) # x(0) = 0.1, xdot(0) = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	den = poly1d([1,0,3,0]) # denominator of the transform
+\end_layout
+
+\begin_layout Plain Layout
+
+	sys1 = signal.lti(num,den) # Finding the LTI response
+\end_layout
+
+\begin_layout Plain Layout
+
+	x = sys1.impulse(T=t)[1] # Finding the inverse transform using impulse method
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(0) # Assigning a new figure
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(t,x,'r') # Plotting the graph of x(t)
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r'$t$') # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r'$x(t)$') # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Q3: Time Response using sys1.impulse of x(t)") # Setting the title
+ of the graph
+\end_layout
+
+\begin_layout Plain Layout
+
+	show() # Displaying the graph
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotX() # Calling the function 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We define the transform of x(t) as X(s).
+ We define the numerator and denominator of X(s) and find the corresponding
+ inverse transform using the signal.lti method from the signal module of
+ Python.
+ We then plot the corresponding value of x(t).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Function to plot y(t)
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotY():
+\end_layout
+
+\begin_layout Plain Layout
+
+	num = poly1d([2]) # numerator of the transform
+\end_layout
+
+\begin_layout Plain Layout
+
+	den = poly1d([1,0,3,0]) # denominator of the tranform
+\end_layout
+
+\begin_layout Plain Layout
+
+	sys1 = signal.lti(num,den) # Finding the LTI transform
+\end_layout
+
+\begin_layout Plain Layout
+
+	y = sys1.impulse(T=t)[1] # Finding the inverse transform using impulse method
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(1) # Assigning a new figure
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(t,y,'r') # Plotting the graph of y(t)
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r'$t$') # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r'$y(t)$') # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Q3: Time Response using sys1.impulse of y(t)") # Setting the title
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	show() # Display the graph
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotY() # Calling the function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We define the transform of y(t) as Y(s).
+ We define the numerator and denominator of Y(s) and find the corresponding
+ inverse transform using the signal.lti method from the signal module of
+ Python.
+ We then plot the corresponding value of y(t).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+R1 = 10.0 # Assigning value of R1
+\end_layout
+
+\begin_layout Plain Layout
+
+R2 = 100.0 # Assigning value of R2
+\end_layout
+
+\begin_layout Plain Layout
+
+L = 1e-3 # Assigning value of L
+\end_layout
+
+\begin_layout Plain Layout
+
+omega = logspace(3,9,61).reshape((61,1)) # Assigning value of omega
+\end_layout
+
+\begin_layout Plain Layout
+
+H = R2/((R1+R2) + 1j*omega*L) # Calculating the value of H
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Initializing the values of circuit elements in the given circuit and creating
+ an omega vector.
+ The value of H(jw) is also caluculated.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def plotResponse():
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(1) # Setting up the figure
+\end_layout
+
+\begin_layout Plain Layout
+
+	cla()
+\end_layout
+
+\begin_layout Plain Layout
+
+	f = omega/(2*pi) # Converting omega into frequency
+\end_layout
+
+\begin_layout Plain Layout
+
+	subplot(211) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	loglog(f,abs(H),'ro') # plotting the magnitude as a loglog plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('Frequency Response') # Setting the title 
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r"$f
+\backslash
+;(Hz)$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r"$|H|$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	subplot(212)
+\end_layout
+
+\begin_layout Plain Layout
+
+	semilogx(f,180*angle(H)/pi,'ro') # plotting the phase as a semilogx plot
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r"$f
+\backslash
+;(Hz)$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r"Arg$(H)$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	show() # Display the graph
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plotResponse() # Calling the function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The response of the transform function is plotted.
+ The magnitude of the transform function H(s) is plotted using loglog plot
+ and the phase of the transform function H(s) is plotted using semilogx
+ plot.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+t1 = linspace(0,1e-2,100001) # Time vector
+\end_layout
+
+\begin_layout Plain Layout
+
+t2 = linspace(0,3*1e-5,100001) # time vector
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Setting up two time vectors to be used later.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def outputVoltage():
+\end_layout
+
+\begin_layout Plain Layout
+
+	omega1 = 1e3 
+\end_layout
+
+\begin_layout Plain Layout
+
+	omega2 = 1e6
+\end_layout
+
+\begin_layout Plain Layout
+
+	numx = poly1d([1e12 - 1e6,0]) # numerator of X(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	denx = poly1d([1,0,1e6+1e12,0,1e18]) # denominator of X(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	numh = poly1d([R2]) # numerator of H(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	denh = poly1d([L,R1+R2]) # denominator of H(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	numy = polymul(numx,numh) # numerator of Y(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	deny = polymul(denx,denh) # denominator of Y(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	sys = signal.lti(numy,deny) # Finding the LTI transform
+\end_layout
+
+\begin_layout Plain Layout
+
+	y1 = sys.impulse(T=t1)[1] # Finding the inverse transform using impulse
+ method
+\end_layout
+
+\begin_layout Plain Layout
+
+	y2 = sys.impulse(T=t2)[1] # Finding the inverse transform using impulse
+ method
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(2)
+\end_layout
+
+\begin_layout Plain Layout
+
+	title("Output Voltage") # Setting of the title
+\end_layout
+
+\begin_layout Plain Layout
+
+	subplot(211) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(t1,y1,'r') # plotting output function
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r"$t$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r"$v(t)$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	subplot(212)
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(t2,y2,'b')
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel(r"$t$") # Setting the X-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel(r"$v(t)$") # Setting the Y-label
+\end_layout
+
+\begin_layout Plain Layout
+
+	show() # display function
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+outputVoltage() # calling the function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Define a function for the output voltage.
+ We first calculate the Input Response as X(s) and the impulse response
+ as H(s).
+ We find the output transform function as Y(s) = X(s) .
+ H(s).
+ From the Y(s) we find the inverse transform to find the output voltage.
+ Two output reponses are plotted.
+ One response is from 0< t < 10 ms and the other response is 0 < t < 30
+ microsecs.
+\end_layout
+
+\begin_layout Section
+Output of the Program
+\end_layout
+
+\begin_layout Subsection
+Time Response using sys1.impulse of x(t)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_0a.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Time Response using sys1.impulse of x(t)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Time Response using sys1.impulse of y(t)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_0b.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Time Response using sys1.impulse of y(t)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Frequency Response
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Frequency Response
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Output Voltage
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure_2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Output Voltage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
