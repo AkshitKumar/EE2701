@@ -15,7 +15,7 @@ func = np.vectorize(func)
 def ftrap(x):
 	h = (max(x) - min(x))/(2*(len(x)-1))
 	x = np.arange(min(x),max(x),h)
-	y = (np.cumsum(func(x),dtype=float) - ((1.0/2.0)*(func(0)+func(x)))) * h
+	y = (np.cumsum(func(x),dtype=float) - ((1.0/2.0)*(func(0)+func(x))) * h
 	return (x,y,h)
 
 # Making a vector which holds values from 0.0 to 5.0 in steps of 0.1
@@ -100,7 +100,7 @@ def TrapezoidRule(x):
 	err.append(0.5) # Setting initial value of error
 	while (max(err) > 1e-8):
 		err = [] # list initialization
-		yprev = (np.cumsum(func(temp),dtype=float) - ((1.0/2.0)*(func(0)+func(temp)))) * h # Calculating the value of yprev
+		yprev = (np.cumsum(func(temp),dtype=float) - ((1.0/2.0)*(func(0)+func(temp))) * h # Calculating the value of yprev
 		tempnew , ynew , h = ftrap(temp) # Getting the value of new temp, new y and new h
 		valueExactErr.append(max(abs(yprev - np.arctan(temp)))) # Adding the value of the exact error
 		for k in range(len(temp)-1):
